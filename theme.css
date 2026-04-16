@@ -54,8 +54,6 @@
   --lh:        1.55;
 
   /* Layout */
-  --col-time:   50px;
-  --col-nick:   124px;
   --sidebar-w:  220px;
   --header-h:   45px;
 
@@ -297,137 +295,156 @@ code, kbd, pre, .irc-monospace {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   7. Messages
+   7. Messages — digest layout
+   nick · HH:MM on its own header line, then message text below.
+   Consecutive messages from the same sender skip the header entirely.
+   Uses #chat prefix throughout to beat TheLounge's default specificity.
    ───────────────────────────────────────────────────────────────────────────── */
-#chat .messages { padding: 6px 0 16px; }
+#chat .messages { padding: 6px 0 20px; }
 
-.msg {
+/* Make .msg a wrapping flex container */
+#chat .msg {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   padding: 0 16px;
-  line-height: var(--lh);
   position: relative;
   transition: background var(--t);
+  border-left: none;
 }
-.msg:not(.previous-source) { margin-top: 10px; }
-.msg.previous-source        { margin-top: 1px; }
-.msg:hover                  { background: var(--c-hover); }
+#chat .msg:not(.previous-source) { margin-top: 18px; }
+#chat .msg.previous-source        { margin-top: 0; }
+#chat .msg:hover                  { background: var(--c-hover); }
 
-/* Timestamp */
-.msg .time {
-  flex: 0 0 var(--col-time);
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  color: var(--c-muted);
-  user-select: none;
-  padding-top: 1px;
-}
-.msg.previous-source .time         { visibility: hidden; }
-.msg.previous-source:hover .time   { visibility: visible; }
-
-/* Nick column */
-.msg .from {
-  flex: 0 0 var(--col-nick);
-  text-align: right;
-  padding-right: 12px;
+/* ── Nick: header line, left-aligned, auto width ── */
+#chat .from {
+  flex: 0 0 auto;
+  order: 0;
+  width: auto;          /* override TheLounge's 134px */
+  max-width: calc(100% - 80px);
+  text-align: left;     /* override TheLounge's right-align */
+  padding: 0;
   overflow: hidden;
-  min-width: 0;
+  white-space: nowrap;
+  position: static;
+  -webkit-mask-image: none;
+  mask-image: none;
 }
-.msg.previous-source .from { visibility: hidden; }
+#chat .msg.previous-source .from { display: none; }
 
-.msg .from .user {
+#chat .from .user {
   font-weight: 600;
-  font-size: 13.5px;
+  font-size: 13px;
   cursor: pointer;
   background: none;
   border: none;
   padding: 0;
-  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
   display: inline-block;
+  max-width: 100%;
   transition: opacity var(--t);
 }
-.msg .from .user:hover { opacity: 0.65; }
+#chat .from .user:hover { opacity: 0.65; }
 
-/* Content */
-.msg .content {
-  flex: 1 1 auto;
-  min-width: 0;
+/* ── "·" separator + time: header line, after nick ── */
+#chat .time {
+  flex: 0 0 auto;
+  order: 1;
+  width: auto;          /* override TheLounge's 55px */
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-muted);
+  padding: 0 0 0 10px;
+  user-select: none;
+}
+#chat .msg:not(.previous-source) .time::before {
+  content: "· ";
+  color: var(--c-muted);
+  padding-right: 2px;
+}
+#chat .msg.previous-source .time { display: none; }
+
+/* ── Content: wraps to its own line below the nick/time header ── */
+#chat .content {
+  flex: 0 0 100%;       /* override TheLounge's flex: 1 1 auto */
+  order: 2;
+  border-left: none;    /* override TheLounge's left border */
+  padding: 1px 0 2px;
   color: var(--c-text);
   word-break: break-word;
   overflow-wrap: anywhere;
+  min-width: 0;
+  text-align: left;
 }
 
 /* Own messages */
-.msg.self .from .user { opacity: 0.45; }
-.msg.self .content    { color: var(--c-soft); font-style: italic; }
+#chat .msg.self .from .user { opacity: 0.5; }
+#chat .msg.self .content    { color: var(--c-soft); font-style: italic; }
 
 /* Highlights / mentions */
-.msg.highlight {
+#chat .chat-view .msg.highlight {
   background: var(--c-hl-bg);
   border-left: 2px solid var(--c-hl-border);
   padding-left: 14px;
 }
-.msg.highlight:hover     { background: var(--c-hl-bg); filter: brightness(0.97); }
-.msg.highlight .content  { color: var(--c-text); font-style: normal; }
-.msg.highlight .time     { visibility: visible !important; }
+#chat .chat-view .msg.highlight:hover    { background: var(--c-hl-bg); filter: brightness(0.97); }
+#chat .chat-view .msg.highlight .content { color: var(--c-text); font-style: normal; border-left: none; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    8. Message types
    ───────────────────────────────────────────────────────────────────────────── */
-.msg[data-type="action"] .content     { color: var(--c-action); font-style: italic; }
-.msg[data-type="action"] .from .user  { color: var(--c-action) !important; opacity: 0.8; }
+#chat .msg[data-type="action"] .content     { color: var(--c-action); font-style: italic; }
+#chat .msg[data-type="action"] .from .user  { color: var(--c-action) !important; opacity: 0.8; }
 
-.msg[data-type="notice"] .content     { color: var(--c-notice); }
-.msg[data-type="notice"] .from .user  { color: var(--c-notice) !important; }
+#chat .msg[data-type="notice"] .content     { color: var(--c-notice); }
+#chat .msg[data-type="notice"] .from .user  { color: var(--c-notice) !important; }
 
-.msg[data-type="join"],
-.msg[data-type="part"],
-.msg[data-type="quit"],
-.msg[data-type="kick"],
-.msg[data-type="mode"],
-.msg[data-type="nick"],
-.msg[data-type="topic"],
-.msg[data-type="whois"],
-.msg[data-type="ctcp"],
-.msg[data-type="plugin"] { margin-top: 0; }
+#chat .msg[data-type="join"],
+#chat .msg[data-type="part"],
+#chat .msg[data-type="quit"],
+#chat .msg[data-type="kick"],
+#chat .msg[data-type="mode"],
+#chat .msg[data-type="nick"],
+#chat .msg[data-type="topic"],
+#chat .msg[data-type="whois"],
+#chat .msg[data-type="ctcp"],
+#chat .msg[data-type="plugin"] { margin-top: 0; }
 
-.msg[data-type="join"] .time,
-.msg[data-type="part"] .time,
-.msg[data-type="quit"] .time,
-.msg[data-type="kick"] .time,
-.msg[data-type="mode"] .time,
-.msg[data-type="nick"] .time,
-.msg[data-type="topic"] .time,
-.msg[data-type="whois"] .time,
-.msg[data-type="ctcp"] .time,
-.msg[data-type="plugin"] .time { color: var(--c-system); font-size: 10.5px; }
+#chat .msg[data-type="join"] .time,
+#chat .msg[data-type="part"] .time,
+#chat .msg[data-type="quit"] .time,
+#chat .msg[data-type="kick"] .time,
+#chat .msg[data-type="mode"] .time,
+#chat .msg[data-type="nick"] .time,
+#chat .msg[data-type="topic"] .time,
+#chat .msg[data-type="whois"] .time,
+#chat .msg[data-type="ctcp"] .time,
+#chat .msg[data-type="plugin"] .time { color: var(--c-muted); font-size: 10.5px; }
 
-.msg[data-type="join"] .from,
-.msg[data-type="part"] .from,
-.msg[data-type="quit"] .from,
-.msg[data-type="kick"] .from,
-.msg[data-type="mode"] .from,
-.msg[data-type="nick"] .from,
-.msg[data-type="topic"] .from,
-.msg[data-type="whois"] .from,
-.msg[data-type="ctcp"] .from,
-.msg[data-type="plugin"] .from { visibility: hidden; }
+#chat .msg[data-type="join"] .from,
+#chat .msg[data-type="part"] .from,
+#chat .msg[data-type="quit"] .from,
+#chat .msg[data-type="kick"] .from,
+#chat .msg[data-type="mode"] .from,
+#chat .msg[data-type="nick"] .from,
+#chat .msg[data-type="topic"] .from,
+#chat .msg[data-type="whois"] .from,
+#chat .msg[data-type="ctcp"] .from,
+#chat .msg[data-type="plugin"] .from { display: none; }
 
-.msg[data-type="join"] .content,
-.msg[data-type="part"] .content,
-.msg[data-type="quit"] .content,
-.msg[data-type="kick"] .content,
-.msg[data-type="mode"] .content,
-.msg[data-type="nick"] .content,
-.msg[data-type="topic"] .content,
-.msg[data-type="whois"] .content,
-.msg[data-type="ctcp"] .content,
-.msg[data-type="plugin"] .content { color: var(--c-muted); font-size: 12.5px; }
+#chat .msg[data-type="join"] .content,
+#chat .msg[data-type="part"] .content,
+#chat .msg[data-type="quit"] .content,
+#chat .msg[data-type="kick"] .content,
+#chat .msg[data-type="mode"] .content,
+#chat .msg[data-type="nick"] .content,
+#chat .msg[data-type="topic"] .content,
+#chat .msg[data-type="whois"] .content,
+#chat .msg[data-type="ctcp"] .content,
+#chat .msg[data-type="plugin"] .content { color: var(--c-muted); font-size: 12.5px; }
 
-.msg[data-type="error"] .content { color: var(--c-danger); }
+#chat .msg[data-type="error"] .content { color: var(--c-danger); }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    9. Nick colours — light mode
@@ -699,7 +716,7 @@ code, kbd, pre, .irc-monospace {
    13. Link previews
    ───────────────────────────────────────────────────────────────────────────── */
 .preview {
-  margin: 5px 0 3px calc(var(--col-time) + var(--col-nick));
+  margin: 5px 0 3px 0;
   border-left: 2px solid var(--c-border-mid);
   padding: 6px 12px;
   border-radius: 0 var(--r) var(--r) 0;
@@ -879,7 +896,5 @@ textarea:focus {
    20. Responsive
    ───────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  #sidebar       { width: 260px; }
-  :root          { --col-nick: 90px; --col-time: 40px; }
-  .preview       { margin-left: 0; }
+  #sidebar { width: 260px; }
 }
