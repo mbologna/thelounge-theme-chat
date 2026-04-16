@@ -1,0 +1,15 @@
+{
+  "name": "thelounge-theme-chat",
+  "version": "1.0.0",
+  "description": "A modern, editorial dark theme for TheLounge",
+  "keywords": ["thelounge", "thelounge-theme"],
+  "main": "package.json",
+  "license": "MIT",
+  "thelounge": {
+    "css": "theme.css",
+    "name": "Chat",
+    "type": "theme",
+    "themeColor": "#0e0e12"
+  },
+  "files": ["theme.css"]
+}
