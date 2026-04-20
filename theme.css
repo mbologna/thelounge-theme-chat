@@ -316,6 +316,30 @@ code, kbd, pre, .irc-monospace {
 #chat .msg.previous-source        { margin-top: 0; }
 #chat .msg:hover                  { background: var(--c-hover); }
 
+/* ── Nick avatar: colored disc with person silhouette cut out ──
+   Uses mask-image + fill-rule:evenodd so the disc color always matches the
+   nick color (currentColor) without any JavaScript. Hidden automatically on
+   .previous-source messages because .from itself is display:none there. */
+#chat .from .user::before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  width: 18px;
+  height: 18px;
+  margin-right: 5px;
+  position: relative;
+  top: -1px;
+  flex-shrink: 0;
+  background-color: currentColor;
+  opacity: 0.82;
+  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill-rule='evenodd'><circle cx='10' cy='10' r='10'/><circle cx='10' cy='7' r='3.5'/><circle cx='10' cy='16' r='6.5'/></svg>");
+          mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill-rule='evenodd'><circle cx='10' cy='10' r='10'/><circle cx='10' cy='7' r='3.5'/><circle cx='10' cy='16' r='6.5'/></svg>");
+  -webkit-mask-size: 100%;
+          mask-size: 100%;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+}
+
 /* ── Nick: header line, left-aligned, auto width ── */
 #chat .from {
   flex: 0 0 auto;
