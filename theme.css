@@ -127,6 +127,11 @@
 *::before,
 *::after { box-sizing: border-box; }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   font-family: var(--font);
   font-size: var(--font-size);
@@ -196,6 +201,7 @@ code, kbd, pre, .irc-monospace {
   transition: background var(--t), color var(--t);
   border-left: 2px solid transparent;
   margin: 1px 0;
+  -webkit-user-select: none;
   user-select: none;
 }
 .channel-list-item:hover {
@@ -332,8 +338,8 @@ code, kbd, pre, .irc-monospace {
   flex-shrink: 0;
   background-color: currentColor;
   opacity: 0.82;
-  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill-rule='evenodd'><circle cx='10' cy='10' r='10'/><circle cx='10' cy='7' r='3.5'/><circle cx='10' cy='16' r='6.5'/></svg>");
-          mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill-rule='evenodd'><circle cx='10' cy='10' r='10'/><circle cx='10' cy='7' r='3.5'/><circle cx='10' cy='16' r='6.5'/></svg>");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill-rule='evenodd'%3E%3Ccircle cx='10' cy='10' r='10'/%3E%3Ccircle cx='10' cy='7' r='3.5'/%3E%3Ccircle cx='10' cy='16' r='6.5'/%3E%3C/svg%3E");
+          mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill-rule='evenodd'%3E%3Ccircle cx='10' cy='10' r='10'/%3E%3Ccircle cx='10' cy='7' r='3.5'/%3E%3Ccircle cx='10' cy='16' r='6.5'/%3E%3C/svg%3E");
   -webkit-mask-size: 100%;
           mask-size: 100%;
   -webkit-mask-repeat: no-repeat;
@@ -380,6 +386,7 @@ code, kbd, pre, .irc-monospace {
   font-variant-numeric: tabular-nums;
   color: var(--c-muted);
   padding: 0 0 0 10px;
+  -webkit-user-select: none;
   user-select: none;
 }
 #chat .msg:not(.previous-source) .time::before {
@@ -549,6 +556,7 @@ code, kbd, pre, .irc-monospace {
   position: relative;
   text-align: center;
   margin: 10px 0 4px;
+  -webkit-user-select: none;
   user-select: none;
 }
 .unread-marker::before {
@@ -575,6 +583,7 @@ code, kbd, pre, .irc-monospace {
   position: relative;
   text-align: center;
   margin: 16px 0 4px;
+  -webkit-user-select: none;
   user-select: none;
 }
 .date-marker::before {
@@ -617,6 +626,7 @@ code, kbd, pre, .irc-monospace {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  -webkit-user-select: none;
   user-select: none;
 }
 #chat .userlist .names {
@@ -629,14 +639,15 @@ code, kbd, pre, .irc-monospace {
   align-items: center;
   padding: 3px 10px;
   font-size: 13px;
-  color: var(--c-soft);
+  /* No color override — .color-X classes apply so nicks match their chat colour */
+  opacity: 0.72;
   cursor: pointer;
   border-radius: var(--r-sm);
   margin: 0 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: background var(--t), color var(--t);
+  transition: background var(--t), opacity var(--t);
   background: none;
   border: none;
   width: calc(100% - 8px);
@@ -646,7 +657,7 @@ code, kbd, pre, .irc-monospace {
 }
 #chat .userlist .user:hover {
   background: var(--c-hover);
-  color: var(--c-text);
+  opacity: 1;
 }
 .user-mode {
   color: var(--c-muted);
@@ -655,6 +666,7 @@ code, kbd, pre, .irc-monospace {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 10px 14px 3px;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -920,5 +932,77 @@ textarea:focus {
    20. Responsive
    ───────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  #sidebar { width: 260px; }
+  /* Keep sidebar at exactly 220px to match TheLounge's mobile offset:
+     left: -220px → transform: translate3d(220px,0,0). Any wider = bleeds onto screen. */
+  #sidebar { width: 220px; }
+
+  /* TheLounge's mobile CSS resets .msg to display:block — re-assert our flex layout. */
+  #chat .msg {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    padding: 0 12px;
+  }
+  #chat .msg:not(.previous-source) { margin-top: 14px; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   21. iOS / Safari fixes
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Smooth momentum scrolling for all scrollable regions */
+#sidebar,
+#chat .messages,
+#chat .userlist .names {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safe-area insets — keeps content clear of notch and home indicator */
+#sidebar {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+#chat .header {
+  padding-left:  max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+#form {
+  padding-left:  max(14px, calc(env(safe-area-inset-left, 0px)  + 6px));
+  padding-right: max(14px, calc(env(safe-area-inset-right, 0px) + 6px));
+  padding-bottom: max(8px, calc(env(safe-area-inset-bottom, 0px) + 8px));
+}
+
+/* Prevent iOS Safari from zooming on input focus (requires font-size ≥ 16px).
+   Only applied on touch-capable screens to keep desktop sizing unchanged. */
+@media (hover: none) and (pointer: coarse) {
+  #form #input {
+    font-size: 16px;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="url"],
+  input[type="email"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* Slightly larger touch targets in the sidebar */
+  .channel-list-item {
+    padding-top:    7px;
+    padding-bottom: 7px;
+  }
+
+  /* Disable hover states that look wrong on tap */
+  .channel-list-item:hover {
+    background: transparent;
+    color: var(--c-soft);
+  }
+  .channel-list-item.active:hover {
+    background: var(--c-active);
+    color: var(--c-text);
+  }
 }
