@@ -1,0 +1,12 @@
+extends: stylelint-config-standard
+
+rules:
+  # Allow vendor prefixes for cross-browser compat
+  property-no-vendor-prefix: null
+  value-no-vendor-prefix: null
+  # Compact single-line declarations are intentional in this theme
+  declaration-block-single-line-max-declarations: null
+  # Duplicate selectors are used for media-query overrides at bottom of file
+  no-duplicate-selectors: null
+  # Descending specificity is intentional for TheLounge override patterns
+  no-descending-specificity: null

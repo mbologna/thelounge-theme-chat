@@ -1,15 +1,37 @@
 {
   "name": "thelounge-theme-chat",
   "version": "1.0.0",
-  "description": "A modern, editorial dark theme for TheLounge",
-  "keywords": ["thelounge", "thelounge-theme"],
+  "description": "Warm, editorial IRC theme for TheLounge — automatic light/dark, digest-style messages, coloured avatar discs",
+  "keywords": [
+    "thelounge",
+    "thelounge-theme"
+  ],
   "main": "package.json",
   "license": "MIT",
+  "author": "Michele Bologna",
+  "homepage": "https://github.com/mbologna/thelounge-theme-chat#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mbologna/thelounge-theme-chat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mbologna/thelounge-theme-chat/issues"
+  },
   "thelounge": {
     "css": "theme.css",
     "name": "Chat",
     "type": "theme",
     "themeColor": "#0e0e12"
   },
-  "files": ["theme.css"]
+  "files": [
+    "theme.css"
+  ],
+  "scripts": {
+    "lint": "stylelint theme.css",
+    "lint:fix": "stylelint theme.css --fix"
+  },
+  "devDependencies": {
+    "stylelint": "^17.4.0",
+    "stylelint-config-standard": "^40.0.0"
+  }
 }
