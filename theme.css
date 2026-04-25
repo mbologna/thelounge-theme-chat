@@ -414,7 +414,13 @@ code, kbd, pre, .irc-monospace {
 
 /* Own messages */
 #chat .msg.self .from .user { opacity: 0.5; }
-#chat .msg.self .content    { color: var(--c-soft); font-style: italic; }
+#chat .msg.self .content    { color: var(--c-soft); }
+#chat .msg.self {
+  border-left: 2px solid var(--c-accent);
+  padding-left: 6px;
+  background: color-mix(in srgb, var(--c-accent) 6%, transparent);
+  border-radius: 4px;
+}
 
 /* Highlights / mentions */
 #chat .chat-view .msg.highlight {
