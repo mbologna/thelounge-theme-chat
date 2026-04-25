@@ -170,6 +170,16 @@ code, kbd, pre, .irc-monospace {
   width: var(--sidebar-w);
 }
 
+/* "Jump to..." channel search — override TheLounge's hardcoded white-on-dark defaults */
+.jump-to-input .input {
+  background: var(--c-elevated);
+  color: var(--c-text);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+}
+.jump-to-input .input::placeholder { color: var(--c-muted); }
+.jump-to-input::before              { color: var(--c-muted); }
+
 .network-name {
   display: block;
   width: 100%;
