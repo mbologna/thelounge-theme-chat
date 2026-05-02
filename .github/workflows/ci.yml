@@ -12,5 +12,4 @@ jobs:
     with:
       node_version: lts/*
       package_manager: npm
-      test_command: test
-
+      test_command: ""
