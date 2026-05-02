@@ -250,7 +250,7 @@ code, kbd, pre, .irc-monospace {
 
 .channel-list-item.highlight .badge {
   background: var(--c-unread);
-  box-shadow: 0 0 0 2px rgb(234 88 12 / 30%);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--c-unread) 30%, transparent);
 }
 
 #footer {
@@ -329,14 +329,14 @@ code, kbd, pre, .irc-monospace {
 #chat .msg {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: baseline; /* aligns nick + time on shared text baseline; .content wraps to its own flex line */
   padding: 0 16px;
   position: relative;
   transition: background var(--t);
   border-left: none;
 }
 #chat .msg:not(.previous-source) { margin-top: 18px; }
-#chat .msg.previous-source        { margin-top: 0; }
+#chat .msg.previous-source        { margin-top: 0; } /* explicit: overrides any TheLounge default margin on consecutive messages */
 #chat .msg:hover                  { background: var(--c-hover); }
 
 /* ── Nick avatar: colored disc with person silhouette cut out ──
@@ -346,7 +346,7 @@ code, kbd, pre, .irc-monospace {
 #chat .from .user::before {
   content: "";
   display: inline-block;
-  vertical-align: top;
+  vertical-align: -4px; /* center 18px disc on 13px cap-height text without distorting the line's baseline */
   width: 18px;
   height: 18px;
   margin-right: 5px;
@@ -398,29 +398,25 @@ code, kbd, pre, .irc-monospace {
   font-size: 11px;
   font-variant-numeric: tabular-nums;
   color: var(--c-muted);
-  padding: 2px 0 0 10px;
+  padding: 0 0 0 10px;
   -webkit-user-select: none;
   user-select: none;
 }
 
 #chat .msg:not(.previous-source) .time::before {
   content: "· ";
-  color: var(--c-muted);
-  padding-right: 2px;
+  padding-right: 2px; /* color inherited from .time */
 }
 #chat .msg.previous-source .time { display: none; }
 
-/* Indent follow-up messages to align text under the sender's nick */
-#chat .msg.previous-source .content { padding-left: 23px; }
-
 /* ── Content: wraps to its own line below the nick/time header ── */
 #chat .content {
-  flex: 0 0 100%;       /* override TheLounge's flex: 1 1 auto */
+  flex: 0 0 100%;       /* override TheLounge's flex: 1 1 auto — intentional: always full-width, always wraps to its own flex line */
   order: 2;
   border-left: none;    /* override TheLounge's left border */
   padding: 1px 0 2px;
   color: var(--c-text);
-  word-break: normal;
+  word-break: normal;   /* override TheLounge's word-break: break-all */
   overflow-wrap: anywhere;
   min-width: 0;
   text-align: left;
@@ -432,19 +428,21 @@ code, kbd, pre, .irc-monospace {
 
 #chat .msg.self {
   border-left: 2px solid var(--c-accent);
-  padding-left: 6px;
+  padding-left: 14px; /* 2px border + 14px = 16px from edge, keeps text aligned with other messages */
   background: color-mix(in srgb, var(--c-accent) 6%, transparent);
-  border-radius: 4px;
+  border-radius: var(--r-sm);
 }
 
 /* Highlights / mentions */
 #chat .chat-view .msg.highlight {
   background: var(--c-hl-bg);
   border-left: 2px solid var(--c-hl-border);
-  padding-left: 14px;
+  padding-left: 14px; /* 2px border + 14px = 16px from edge */
 }
 #chat .chat-view .msg.highlight:hover    { background: var(--c-hl-bg); filter: brightness(0.97); }
 #chat .chat-view .msg.highlight .content { color: var(--c-text); font-style: normal; border-left: none; }
+/* Self-highlight: own message that also mentions you — highlight wins over self styling */
+#chat .chat-view .msg.highlight.self { background: var(--c-hl-bg); border-left-color: var(--c-hl-border); }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    8. Message types
@@ -455,6 +453,8 @@ code, kbd, pre, .irc-monospace {
 #chat .msg[data-type="notice"] .content     { color: var(--c-notice); }
 #chat .msg[data-type="notice"] .from .user  { color: var(--c-notice) !important; }
 
+/* Note: :is() specificity equals its most-specific argument. All args here are
+   attribute selectors (0,1,0), so specificity is uniform across the group. */
 #chat .msg:is([data-type="join"],[data-type="part"],[data-type="quit"],[data-type="kick"],[data-type="mode"],[data-type="nick"],[data-type="topic"],[data-type="whois"],[data-type="ctcp"],[data-type="plugin"]) { margin-top: 0; }
 #chat .msg:is([data-type="join"],[data-type="part"],[data-type="quit"],[data-type="kick"],[data-type="mode"],[data-type="nick"],[data-type="topic"],[data-type="whois"],[data-type="ctcp"],[data-type="plugin"]) .time { color: var(--c-muted); font-size: 10.5px; }
 #chat .msg:is([data-type="join"],[data-type="part"],[data-type="quit"],[data-type="kick"],[data-type="mode"],[data-type="nick"],[data-type="topic"],[data-type="whois"],[data-type="ctcp"],[data-type="plugin"]) .from { display: none; }
@@ -755,7 +755,7 @@ code, kbd, pre, .irc-monospace {
   padding: 6px 12px;
   border-radius: 0 var(--r) var(--r) 0;
   background: var(--c-elevated);
-  max-width: 460px;
+  max-width: min(460px, 100%);
 }
 
 .preview .thumb {
@@ -946,7 +946,7 @@ textarea:focus {
   #chat .msg {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: baseline;
     padding: 0 12px;
   }
   #chat .msg:not(.previous-source) { margin-top: 14px; }
