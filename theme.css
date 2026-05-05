@@ -65,6 +65,21 @@
   /* Motion */
   --t: 120ms ease;
 
+  /* Shadows */
+  --shadow-sm:   0 4px 12px rgb(0 0 0 / 12%);
+  --shadow-md:   0 8px 24px rgb(0 0 0 / 15%);
+  --shadow-lg:   0 20px 50px rgb(0 0 0 / 20%);
+  --shadow-card: 0 12px 40px rgb(0 0 0 / 10%);
+
+  /* Typography scale */
+  --lh-tight:    1.4;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* On-color text (white on accented surfaces) */
+  --c-on-accent: #fff;
+
   /* ── TheLounge variable overrides ── */
   --body-color:             var(--c-text);
   --body-color-muted:       var(--c-muted);
@@ -110,6 +125,12 @@
     --c-action:  #c4b5fd;
     --c-danger:  #fca5a5;
     --overlay-bg-color: rgb(0 0 0 / 60%);
+
+    /* Shadows are heavier on dark surfaces */
+    --shadow-sm:   0 4px 12px rgb(0 0 0 / 25%);
+    --shadow-md:   0 8px 24px rgb(0 0 0 / 35%);
+    --shadow-lg:   0 20px 50px rgb(0 0 0 / 50%);
+    --shadow-card: 0 12px 40px rgb(0 0 0 / 30%);
   }
 }
 
@@ -186,7 +207,7 @@ code, kbd, pre, .irc-monospace {
   text-align: left;
   color: var(--c-muted);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 14px 14px 4px;
@@ -218,7 +239,7 @@ code, kbd, pre, .irc-monospace {
   background: var(--c-active);
   color: var(--c-text);
   border-left-color: var(--c-accent);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
 }
 
 .channel-list-item .name {
@@ -230,18 +251,18 @@ code, kbd, pre, .irc-monospace {
 
 .channel-list-item.unread .name {
   color: var(--c-text);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
 }
 
 .channel-list-item .badge {
   flex-shrink: 0;
   background: var(--c-unread-muted);
-  color: #fff;
+  color: var(--c-on-accent);
   font-size: 10.5px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   min-width: 18px;
   height: 18px;
-  border-radius: 9px;
+  border-radius: 9999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -287,7 +308,7 @@ code, kbd, pre, .irc-monospace {
 }
 
 #chat .header .title {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   font-size: 14px;
   color: var(--c-text);
   white-space: nowrap;
@@ -376,7 +397,7 @@ code, kbd, pre, .irc-monospace {
 #chat .msg.previous-source .from { display: none; }
 
 #chat .from .user {
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   font-size: 13px;
   cursor: pointer;
   background: none;
@@ -561,7 +582,7 @@ code, kbd, pre, .irc-monospace {
   background: var(--c-bg);
   color: var(--c-unread);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   letter-spacing: 0.05em;
   padding: 0 10px;
 }
@@ -613,7 +634,7 @@ code, kbd, pre, .irc-monospace {
   border-bottom: 1px solid var(--c-border);
   color: var(--c-muted);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   -webkit-user-select: none;
@@ -657,7 +678,7 @@ code, kbd, pre, .irc-monospace {
 .user-mode {
   color: var(--c-muted);
   font-size: 10.5px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 10px 14px 3px;
@@ -681,7 +702,7 @@ code, kbd, pre, .irc-monospace {
 #form #nick {
   color: var(--c-muted);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   user-select: none;
   flex-shrink: 0;
   max-width: 100px;
@@ -689,7 +710,7 @@ code, kbd, pre, .irc-monospace {
   text-overflow: ellipsis;
   white-space: nowrap;
   padding: 7px 0;
-  line-height: 1.4;
+  line-height: var(--lh-tight);
 }
 
 #form #input {
@@ -700,7 +721,7 @@ code, kbd, pre, .irc-monospace {
   color: var(--c-text);
   font-family: var(--font);
   font-size: var(--font-size);
-  line-height: 1.4;
+  line-height: var(--lh-tight);
   padding: 7px 12px;
   min-height: 36px;
   max-height: 200px;
@@ -708,23 +729,18 @@ code, kbd, pre, .irc-monospace {
   transition: border-color var(--t), box-shadow var(--t);
 }
 
-#form #input:focus {
-  outline: none;
-  border-color: var(--c-accent);
-  box-shadow: 0 0 0 3px var(--c-accent-glow);
-}
 #form #input::placeholder { color: var(--c-muted); }
 
 #form #submit {
   flex-shrink: 0;
   background: var(--c-accent);
-  color: #fff;
+  color: var(--c-on-accent);
   border: none;
   border-radius: var(--r);
   padding: 0 16px;
   height: 36px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   cursor: pointer;
   transition: opacity var(--t);
   display: inline-flex;
@@ -766,7 +782,7 @@ code, kbd, pre, .irc-monospace {
   border-radius: var(--r-sm);
   object-fit: cover;
 }
-.preview .title       { font-weight: 600; font-size: 13.5px; color: var(--c-text); }
+.preview .title       { font-weight: var(--fw-semibold); font-size: 13.5px; color: var(--c-text); }
 .preview .description { font-size: 12.5px; color: var(--c-soft); margin-top: 2px; }
 .preview .link        { display: block; font-size: 11px; color: var(--c-muted); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
@@ -797,7 +813,7 @@ code, kbd, pre, .irc-monospace {
   background: var(--c-elevated);
   border: 1px solid var(--c-border-mid);
   border-radius: var(--r);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 15%);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
@@ -823,7 +839,7 @@ code, kbd, pre, .irc-monospace {
   border: 1px solid var(--c-border-mid) !important;
   border-radius: var(--r-sm) !important;
   font-size: 12px !important;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 15%) !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -839,14 +855,14 @@ code, kbd, pre, .irc-monospace {
   background: var(--c-elevated);
   border: 1px solid var(--c-border-mid);
   border-radius: var(--r-lg);
-  box-shadow: 0 20px 50px rgb(0 0 0 / 20%);
+  box-shadow: var(--shadow-lg);
   color: var(--c-text);
 }
 
 .window.popup .header {
   border-bottom: 1px solid var(--c-border);
   padding: 13px 18px;
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -869,7 +885,7 @@ code, kbd, pre, .irc-monospace {
   transition: background var(--t), color var(--t);
 }
 .settings-menu a:hover           { background: var(--c-hover); color: var(--c-text); text-decoration: none; }
-.settings-menu a.active          { background: var(--c-active); color: var(--c-text); font-weight: 500; }
+.settings-menu a.active          { background: var(--c-active); color: var(--c-text); font-weight: var(--fw-medium); }
 
 label { color: var(--c-soft); font-size: 13.5px; }
 
@@ -890,13 +906,15 @@ textarea {
   transition: border-color var(--t), box-shadow var(--t);
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="url"]:focus,
-input[type="email"]:focus,
-input[type="number"]:focus,
-select:focus,
-textarea:focus {
+/* Unified focus ring — keyboard/screen-reader only (:focus-visible) */
+#form #input:focus-visible,
+input[type="text"]:focus-visible,
+input[type="password"]:focus-visible,
+input[type="url"]:focus-visible,
+input[type="email"]:focus-visible,
+input[type="number"]:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
   outline: none;
   border-color: var(--c-accent);
   box-shadow: 0 0 0 3px var(--c-accent-glow);
@@ -913,7 +931,7 @@ textarea:focus {
   transition: background var(--t);
 }
 .btn:hover          { background: var(--c-hover); }
-.btn-primary        { background: var(--c-accent); border-color: transparent; color: #fff; font-weight: 500; }
+.btn-primary        { background: var(--c-accent); border-color: transparent; color: var(--c-on-accent); font-weight: var(--fw-medium); }
 .btn-primary:hover  { opacity: 0.85; background: var(--c-accent); }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -929,7 +947,7 @@ textarea:focus {
   background: var(--c-elevated);
   border: 1px solid var(--c-border-mid);
   border-radius: var(--r-lg);
-  box-shadow: 0 12px 40px rgb(0 0 0 / 10%);
+  box-shadow: var(--shadow-card);
   padding: 32px 28px;
   max-width: 420px;
 }
@@ -1012,4 +1030,17 @@ textarea:focus {
     background: var(--c-active);
     color: var(--c-text);
   }
+
+  /* Larger touch targets in the userlist */
+  #chat .userlist .user {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   22. Reduced motion
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  * { --t: 0ms !important; }
 }
