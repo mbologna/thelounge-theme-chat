@@ -174,7 +174,7 @@ code, kbd, pre, .irc-monospace {
 /* ─────────────────────────────────────────────────────────────────────────────
    4. Scrollbars
    ───────────────────────────────────────────────────────────────────────────── */
-::-webkit-scrollbar             { width: 5px; height: 5px; }
+::-webkit-scrollbar             { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track       { background: transparent; }
 ::-webkit-scrollbar-thumb       { background: var(--c-border-mid); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--c-muted); }
@@ -236,8 +236,8 @@ code, kbd, pre, .irc-monospace {
 }
 
 .channel-list-item.active {
-  background: var(--c-active);
-  color: var(--c-text);
+  background: color-mix(in srgb, var(--c-accent) 10%, var(--c-panel));
+  color: var(--c-accent);
   border-left-color: var(--c-accent);
   font-weight: var(--fw-medium);
 }
@@ -267,6 +267,10 @@ code, kbd, pre, .irc-monospace {
   align-items: center;
   justify-content: center;
   padding: 0 5px;
+}
+
+.channel-list-item.highlight {
+  border-left-color: var(--c-unread);
 }
 
 .channel-list-item.highlight .badge {
@@ -359,6 +363,7 @@ code, kbd, pre, .irc-monospace {
 #chat .msg:not(.previous-source) { margin-top: 18px; }
 #chat .msg.previous-source        { margin-top: 0; } /* explicit: overrides any TheLounge default margin on consecutive messages */
 #chat .msg:hover                  { background: var(--c-hover); }
+#chat .msg.previous-source:hover .time { opacity: 1; }
 
 /* ── Nick avatar: colored disc with person silhouette cut out ──
    Uses mask-image + fill-rule:evenodd so the disc color always matches the
@@ -428,7 +433,17 @@ code, kbd, pre, .irc-monospace {
   content: "· ";
   padding-right: 2px; /* color inherited from .time */
 }
-#chat .msg.previous-source .time { display: none; }
+/* Grouped messages: hide the timestamp by default, reveal it on hover. */
+#chat .msg.previous-source .time {
+  display: block;
+  position: absolute;
+  right: 16px;
+  top: 2px;
+  opacity: 0;
+  pointer-events: none;
+  padding: 0;
+  transition: opacity var(--t);
+}
 
 /* ── Content: wraps to its own line below the nick/time header ── */
 #chat .content {
@@ -448,9 +463,9 @@ code, kbd, pre, .irc-monospace {
 #chat .msg.self .content    { color: var(--c-soft); }
 
 #chat .msg.self {
-  border-left: 2px solid var(--c-accent);
-  padding-left: 14px; /* 2px border + 14px = 16px from edge, keeps text aligned with other messages */
-  background: color-mix(in srgb, var(--c-accent) 6%, transparent);
+  border-left: 3px solid var(--c-accent);
+  padding-left: 13px; /* 3px border + 13px = 16px from edge, keeps text aligned with other messages */
+  background: color-mix(in srgb, var(--c-accent) 8%, transparent);
   border-radius: var(--r-sm);
 }
 
@@ -572,19 +587,32 @@ code, kbd, pre, .irc-monospace {
   top: 50%;
   left: 16px; right: 16px;
   height: 1px;
-  background: var(--c-unread);
-  opacity: 0.4;
+  background: color-mix(in srgb, var(--c-unread) 30%, transparent);
 }
 
 .unread-marker-text {
   position: relative;
-  display: inline-block;
-  background: var(--c-bg);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: color-mix(in srgb, var(--c-unread) 12%, var(--c-bg));
+  border: 1px solid color-mix(in srgb, var(--c-unread) 25%, transparent);
   color: var(--c-unread);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: var(--fw-semibold);
-  letter-spacing: 0.05em;
-  padding: 0 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 10px 2px 8px;
+  border-radius: 9999px;
+}
+
+.unread-marker-text::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  background: var(--c-unread);
+  border-radius: 9999px;
+  flex-shrink: 0;
 }
 
 .date-marker {
@@ -1039,7 +1067,22 @@ textarea:focus-visible {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   22. Reduced motion
+   22. Animations
+   ───────────────────────────────────────────────────────────────────────────── */
+@keyframes mention-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--c-unread) 30%, transparent); }
+  50%       { box-shadow: 0 0 0 5px color-mix(in srgb, var(--c-unread) 10%, transparent); }
+}
+
+/* Only animate when the user has not requested reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+  .channel-list-item.highlight .badge {
+    animation: mention-pulse 2s ease-in-out infinite;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   23. Reduced motion
    ───────────────────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   * { --t: 0ms !important; }
