@@ -433,6 +433,7 @@ code, kbd, pre, .irc-monospace {
   content: "· ";
   padding-right: 2px; /* color inherited from .time */
 }
+
 /* Grouped messages: hide the timestamp by default, reveal it on hover. */
 #chat .msg.previous-source .time {
   display: block;
@@ -477,6 +478,7 @@ code, kbd, pre, .irc-monospace {
 }
 #chat .chat-view .msg.highlight:hover    { background: var(--c-hl-bg); filter: brightness(0.97); }
 #chat .chat-view .msg.highlight .content { color: var(--c-text); font-style: normal; border-left: none; }
+
 /* Self-highlight: own message that also mentions you — highlight wins over self styling */
 #chat .chat-view .msg.highlight.self { background: var(--c-hl-bg); border-left-color: var(--c-hl-border); }
 
