@@ -36,10 +36,10 @@
   --c-offline: #c4bfbb;
 
   /* Markers */
-  --c-unread:        #ea580c;
+  --c-unread:        #dc2626;
   --c-unread-muted:  #78716c;
-  --c-hl-bg:         rgb(234 88 12 / 8%);
-  --c-hl-border:     #ea580c;
+  --c-hl-bg:         rgb(220 38 38 / 8%);
+  --c-hl-border:     #dc2626;
 
   /* Message types */
   --c-notice:  #1d4ed8;
@@ -102,10 +102,10 @@
     --c-online:  #4ade80;
     --c-away:    #fb923c;
     --c-offline: #44403c;
-    --c-unread:        #fb923c;
+    --c-unread:        #f87171;
     --c-unread-muted:  #a8a29e;
-    --c-hl-bg:         rgb(251 146 60 / 10%);
-    --c-hl-border:     #fb923c;
+    --c-hl-bg:         rgb(248 113 113 / 10%);
+    --c-hl-border:     #f87171;
     --c-notice:  #93c5fd;
     --c-action:  #c4b5fd;
     --c-danger:  #fca5a5;
