@@ -1,6 +1,6 @@
 {
   "name": "thelounge-theme-chat",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Warm, editorial IRC theme for TheLounge — automatic light/dark, digest-style messages, coloured avatar discs",
   "keywords": [
     "thelounge",
@@ -18,19 +18,22 @@
     "url": "https://github.com/mbologna/thelounge-theme-chat/issues"
   },
   "thelounge": {
-    "css": "theme.css",
+    "css": "theme.min.css",
     "name": "Chat",
     "type": "theme",
     "themeColor": "#0e0e12"
   },
   "files": [
-    "theme.css"
+    "theme.css",
+    "theme.min.css"
   ],
   "scripts": {
+    "build": "lightningcss --minify theme.css -o theme.min.css",
     "lint": "stylelint theme.css",
     "lint:fix": "stylelint theme.css --fix"
   },
   "devDependencies": {
+    "lightningcss-cli": "^1.32.0",
     "stylelint": "^17.4.0",
     "stylelint-config-standard": "^40.0.0"
   }
