@@ -25,8 +25,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Audit
+        run: npm audit --audit-level=moderate
+
       - name: Lint
         run: npm run lint
+
+      - name: Build
+        run: npm run build
 
       - name: Publish to npm (with provenance)
         run: npm publish --provenance --access public
