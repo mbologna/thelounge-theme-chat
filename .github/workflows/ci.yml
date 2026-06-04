@@ -8,7 +8,7 @@ name: CI
 
 jobs:
   ci:
-    uses: mbologna/.github/.github/workflows/node-ci.yml@4df74894bb7396d6abbf3baf4bcdf8ec9b9bed39 # main
+    uses: mbologna/.github/.github/workflows/node-ci.yml@60c0ffe12ebfe88e773c2780a7f71d80829ddfb4 # main
     with:
       node_version: lts/*
       package_manager: npm
