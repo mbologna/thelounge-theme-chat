@@ -271,6 +271,7 @@ code, kbd, pre, .irc-monospace {
   padding: 4px;
   overflow-y: auto;
   max-height: 320px;
+  overscroll-behavior-y: contain;
 }
 
 .jump-to-result {
@@ -508,7 +509,7 @@ code, kbd, pre, .irc-monospace {
 /* contain:layout — new messages don't trigger full-page reflow.
    scrollbar-gutter:stable — reserves scrollbar space permanently so content
    width doesn't jump by ~4px when the scrollbar appears or disappears. */
-#chat .messages { padding: 6px 0 20px; contain: layout; scrollbar-gutter: stable; overscroll-behavior-y: contain; }
+#chat .messages { padding: 6px 0 20px; contain: layout; scrollbar-gutter: stable; overscroll-behavior-y: contain; scroll-behavior: auto; }
 
 /* Make .msg a wrapping flex container */
 #chat .msg {
@@ -618,6 +619,7 @@ code, kbd, pre, .irc-monospace {
   overflow-wrap: anywhere;
   min-width: 0;
   text-align: left;
+  text-wrap: pretty;    /* avoid orphaned last words (Chrome 117+, progressive) */
 }
 
 /* Own messages */
@@ -669,7 +671,9 @@ code, kbd, pre, .irc-monospace {
 #chat .msg[data-type="notice"] .from .user  { color: var(--c-notice) !important; }
 
 /* Note: :is() specificity equals its most-specific argument. All args here are
-   attribute selectors (0,1,0), so specificity is uniform across the group. */
+   attribute selectors (0,1,0), so specificity is uniform across the group.
+   Nesting (&) is avoided — it requires Chrome 120+/Firefox 121+/Safari 17.2+;
+   explicit child selectors work in all browsers that support :is(). */
 #chat .msg:is(
   [data-type="join"],        [data-type="part"],    [data-type="quit"],
   [data-type="kick"],        [data-type="mode"],    [data-type="nick"],
@@ -677,13 +681,31 @@ code, kbd, pre, .irc-monospace {
   [data-type="plugin"],      [data-type="raw"],     [data-type="motd"],
   [data-type="banlist"],     [data-type="ignorelist"],
   [data-type="channellist"]
-) {
-  margin-top: 0;
+) { margin-top: 0; }
 
-  & .time    { color: var(--c-muted); font-size: 10.5px; }
-  & .from    { display: none; }
-  & .content { color: var(--c-muted); font-size: 12.5px; }
-}
+#chat .msg:is(
+  [data-type="join"],   [data-type="part"],   [data-type="quit"],
+  [data-type="kick"],   [data-type="mode"],   [data-type="nick"],
+  [data-type="topic"],  [data-type="whois"],  [data-type="ctcp"],
+  [data-type="plugin"], [data-type="raw"],    [data-type="motd"],
+  [data-type="banlist"],[data-type="ignorelist"],[data-type="channellist"]
+) .time    { color: var(--c-muted); font-size: 10.5px; }
+
+#chat .msg:is(
+  [data-type="join"],   [data-type="part"],   [data-type="quit"],
+  [data-type="kick"],   [data-type="mode"],   [data-type="nick"],
+  [data-type="topic"],  [data-type="whois"],  [data-type="ctcp"],
+  [data-type="plugin"], [data-type="raw"],    [data-type="motd"],
+  [data-type="banlist"],[data-type="ignorelist"],[data-type="channellist"]
+) .from    { display: none; }
+
+#chat .msg:is(
+  [data-type="join"],   [data-type="part"],   [data-type="quit"],
+  [data-type="kick"],   [data-type="mode"],   [data-type="nick"],
+  [data-type="topic"],  [data-type="whois"],  [data-type="ctcp"],
+  [data-type="plugin"], [data-type="raw"],    [data-type="motd"],
+  [data-type="banlist"],[data-type="ignorelist"],[data-type="channellist"]
+) .content { color: var(--c-muted); font-size: 12.5px; }
 
 #chat .msg[data-type="error"] .content { color: var(--c-danger); }
 
@@ -833,6 +855,7 @@ code, kbd, pre, .irc-monospace {
   text-transform: uppercase;
   padding: 2px 10px 2px 8px;
   border-radius: 9999px;
+  text-wrap: balance;   /* balance short pill text across both lines if it wraps */
 }
 
 .unread-marker-text::before {
@@ -976,7 +999,15 @@ code, kbd, pre, .irc-monospace {
   padding-right: 8px;
   border-right: 1px solid var(--c-border-mid);
   line-height: var(--lh-tight);
+  /* In newer TheLounge, #nick is a button that opens the nick-change dialog */
+  background: none;
+  border-top: none;
+  border-bottom: none;
+  border-left: none;
+  cursor: pointer;
+  transition: color var(--t);
 }
+#form #nick:hover { color: var(--c-text); }
 
 #form #input {
   flex: 1 1 auto;
@@ -1181,6 +1212,8 @@ code {
   border-radius: var(--r);
   box-shadow: var(--shadow-md);
   outline: none;
+  /* Own stacking context — prevents z-index races with message content */
+  isolation: isolate;
 }
 
 .textcomplete-item,
@@ -1373,6 +1406,9 @@ input[type="checkbox"]:checked {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 11px;
+  /* Ensure the SVG checkmark prints in browsers that suppress backgrounds */
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
 }
 
 input[type="radio"]:checked {
@@ -1381,6 +1417,8 @@ input[type="radio"]:checked {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='3.5' fill='%23fff'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: center;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
 }
 
 input[type="checkbox"]:focus-visible,
@@ -1639,6 +1677,23 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   .jump-to-bottom {
     animation: jump-to-bottom-in 150ms ease;
   }
+
+  /* @starting-style defines the "before first paint" state so the enter
+     animation fires even when the element is inserted via display:block.
+     Progressive: silently ignored in browsers without support. */
+  @starting-style {
+    .jump-to-bottom .jump-to-bottom-btn,
+    .jump-to-bottom button {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  /* Smooth scroll when TheLounge jumps to the latest message programmatically.
+     Only applied under no-preference so reduced-motion users get instant jumps. */
+  #chat .messages {
+    scroll-behavior: smooth;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1670,6 +1725,8 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   #chat .userlist,
   #form,
   .unread-marker,
+  .jump-to-bottom,
+  .notification,
   #chat .header button,
   #chat .toggle-button { display: none !important; }
 
@@ -1773,6 +1830,17 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   /* Sidebar scroll-shadow gradient: forced-colors overrides custom properties,
      turning the fade into a solid block. Opt out so it renders as intended. */
   #sidebar::after { forced-color-adjust: none; }
+
+  /* Scroll-to-bottom FAB: keep accent pill readable against forced canvas */
+  .jump-to-bottom .jump-to-bottom-btn,
+  .jump-to-bottom button {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  /* Range thumb: must stay visually distinct from the track */
+  input[type="range"] { forced-color-adjust: none; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1865,6 +1933,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   font-weight: var(--fw-semibold);
   color: var(--c-unread);
   margin-bottom: 2px;
+  text-wrap: balance;
 }
 
 .notification .body {
@@ -1888,7 +1957,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 
   @media (prefers-color-scheme: dark) {
     .channel-list-item.active       { background: #1e3a5f; }
-    .channel-list-item.active:hover { background: #1e40af33; }
+    .channel-list-item.active:hover { background: rgba(30, 64, 175, 0.2); }
   }
 
   /* Own messages: flat very-light blue tint */
