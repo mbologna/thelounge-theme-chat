@@ -80,6 +80,10 @@
   /* On-color text (white on accented surfaces) */
   --c-on-accent: #fff;
 
+  /* Tell the browser this page supports both schemes so system UI
+     (scrollbars, autofill, date pickers) auto-adapts to the active mode */
+  color-scheme: light dark;
+
   /* ── TheLounge variable overrides ── */
   --body-color:             var(--c-text);
   --body-color-muted:       var(--c-muted);
@@ -154,6 +158,7 @@ body {
   background: var(--c-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -184,6 +189,7 @@ code, kbd, pre, .irc-monospace {
 ::-webkit-scrollbar-track       { background: transparent; }
 ::-webkit-scrollbar-thumb       { background: var(--c-border-mid); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--c-muted); }
+::-webkit-scrollbar-corner      { background: transparent; }
 *                               { scrollbar-width: thin; scrollbar-color: var(--c-border-mid) transparent; }
 
 @media (prefers-color-scheme: dark) {
@@ -200,6 +206,9 @@ code, kbd, pre, .irc-monospace {
   border-right: 1px solid var(--c-border);
   width: var(--sidebar-w);
   transition: transform var(--t);
+  /* Promote to its own composited layer so mobile slide-in doesn't trigger
+     a paint. will-change is scoped here and removed in reduced-motion. */
+  will-change: transform;
 }
 
 /* Scroll-hint: a gradient at the foot of the channel list hints at overflow.
@@ -223,8 +232,52 @@ code, kbd, pre, .irc-monospace {
   border: 1px solid var(--c-border);
   border-radius: var(--r-sm);
 }
-.jump-to-input .input::placeholder { color: var(--c-muted); }
+.jump-to-input .input::placeholder { color: var(--c-muted); opacity: 1; }
 .jump-to-input::before              { color: var(--c-muted); }
+
+/* Jump-to results dropdown */
+.jump-to-results {
+  background: var(--c-elevated);
+  border: 1px solid var(--c-border-mid);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-md);
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 4px;
+  overflow-y: auto;
+  max-height: 320px;
+}
+
+.jump-to-result {
+  border-radius: var(--r-sm);
+  transition: background var(--t);
+}
+
+.jump-to-result a,
+.jump-to-result button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 6px 10px;
+  color: var(--c-soft);
+  font-size: 13.5px;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-radius: var(--r-sm);
+  transition: background var(--t), color var(--t);
+}
+
+.jump-to-result a:hover,
+.jump-to-result button:hover,
+.jump-to-result.active a,
+.jump-to-result.active button {
+  background: var(--c-hover);
+  color: var(--c-text);
+  text-decoration: none;
+}
 
 .network-name {
   display: block;
@@ -380,7 +433,10 @@ code, kbd, pre, .irc-monospace {
    Consecutive messages from the same sender skip the header entirely.
    Uses #chat prefix throughout to beat TheLounge's default specificity.
    ───────────────────────────────────────────────────────────────────────────── */
-#chat .messages { padding: 6px 0 20px; }
+/* contain:layout tells the browser this element's layout is independent from
+   the rest of the page — new messages arriving don't trigger full-page layout
+   recalculation. Safe here because no positioned descendants escape the box. */
+#chat .messages { padding: 6px 0 20px; contain: layout; }
 
 /* Make .msg a wrapping flex container */
 #chat .msg {
@@ -862,10 +918,10 @@ code, kbd, pre, .irc-monospace {
   min-height: 36px;
   max-height: 200px;
   resize: none;
-  transition: border-color var(--t), box-shadow var(--t);
+  transition: border-color var(--t), box-shadow var(--t), height var(--t);
 }
 
-#form #input::placeholder { color: var(--c-muted); }
+#form #input::placeholder { color: var(--c-muted); opacity: 1; }
 
 #form #submit {
   flex-shrink: 0;
@@ -1150,6 +1206,11 @@ textarea {
   transition: border-color var(--t), box-shadow var(--t);
 }
 
+/* Firefox renders ::placeholder at 54% opacity by default — normalize to 1
+   so `color: var(--c-muted)` gives the same visual result in all browsers */
+input::placeholder,
+textarea::placeholder { color: var(--c-muted); opacity: 1; }
+
 /* Unified focus ring — keyboard/screen-reader only (:focus-visible) */
 #form #input:focus-visible,
 input[type="text"]:focus-visible,
@@ -1371,6 +1432,10 @@ button.btn:focus-visible,
    ───────────────────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   * { --t: 0ms !important; }
+
+  /* will-change promotes elements to composited layers — wasteful when
+     there are no animations, and it can interfere with rendering. */
+  #sidebar { will-change: auto; }
 
   /* Grouped-message timestamps rely on an opacity transition to reveal on hover.
      With motion disabled that transition is suppressed, so make them always
