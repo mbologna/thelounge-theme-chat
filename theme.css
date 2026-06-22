@@ -152,6 +152,8 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Remove the blue tap flash on iOS/Android — we provide our own focus styles */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -1025,6 +1027,9 @@ code, kbd, pre, .irc-monospace {
   resize: none;
   caret-color: var(--c-accent);
   transition: border-color var(--t), box-shadow var(--t), height var(--t);
+  /* Progressive: Chrome 123+ auto-sizes the textarea to its content, replacing
+     TheLounge's JS resize. Older browsers fall back to JS behavior unchanged. */
+  field-sizing: content;
 }
 
 #form #input::placeholder { color: var(--c-muted); opacity: 1; }
@@ -1183,6 +1188,7 @@ code {
   word-break: normal;
   white-space: pre;
   max-width: 100%;
+  tab-size: 2; /* browsers default to 8 — 2 matches most IRC clients' tab convention */
 }
 
 /* A code block already carries the block styling — strip the inline chip look */
@@ -1353,6 +1359,7 @@ textarea:focus-visible {
 
 /* Focus ring for buttons and other interactive elements */
 #form #upload:focus-visible,
+#form #nick:focus-visible,
 .btn:focus-visible,
 button.btn:focus-visible,
 #chat .header button:focus-visible,
@@ -1841,6 +1848,24 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 
   /* Range thumb: must stay visually distinct from the track */
   input[type="range"] { forced-color-adjust: none; }
+
+  /* Custom checkbox/radio: appearance:none stripped the OS control — under
+     forced-colors the background-image SVG is overridden, making the
+     checkmark/disc invisible. Opt out so our drawn controls stay legible. */
+  input[type="checkbox"],
+  input[type="radio"] {
+    forced-color-adjust: none;
+  }
+  /* Restore semantic system colors for the unchecked border */
+  input[type="checkbox"]:not(:checked),
+  input[type="radio"]:not(:checked) {
+    border-color: ButtonText;
+    background: ButtonFace;
+  }
+
+  /* Select: background-image arrow is painted, not a system glyph —
+     opt out so the chevron remains visible against the forced background */
+  select { forced-color-adjust: none; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
