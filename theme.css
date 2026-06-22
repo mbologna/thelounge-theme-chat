@@ -7,6 +7,21 @@
  */
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   0. @property registrations (progressive — Chrome 85+, Firefox 128+)
+   Typed custom properties let the browser interpolate colors in transitions.
+   Without these, transitioning a var() that resolves to a color has no effect.
+   Browsers that don't support @property silently ignore these declarations.
+   ───────────────────────────────────────────────────────────────────────────── */
+@property --c-accent      { syntax: "<color>"; inherits: true; initial-value: #2563eb; }
+@property --c-unread      { syntax: "<color>"; inherits: true; initial-value: #dc2626; }
+@property --c-panel       { syntax: "<color>"; inherits: true; initial-value: #efece9; }
+@property --c-hover       { syntax: "<color>"; inherits: true; initial-value: #e9e5e1; }
+@property --c-text        { syntax: "<color>"; inherits: true; initial-value: #1c1917; }
+@property --c-soft        { syntax: "<color>"; inherits: true; initial-value: #6b6460; }
+@property --c-muted       { syntax: "<color>"; inherits: true; initial-value: #7b7570; }
+@property --c-border-mid  { syntax: "<color>"; inherits: true; initial-value: rgba(0,0,0,0.13); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
    1. Design tokens — light mode (default)
    ───────────────────────────────────────────────────────────────────────────── */
 :root {
@@ -379,6 +394,7 @@ code, kbd, pre, .irc-monospace {
   color: var(--c-on-accent);
   font-size: 10.5px;
   font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums; /* keeps badge width stable as count changes */
   min-width: 18px;
   height: 18px;
   border-radius: 9999px;
@@ -1094,6 +1110,7 @@ code, kbd, pre, .irc-monospace {
   border-radius: var(--r);
   box-shadow: none;
   max-width: min(480px, 100%);
+  overflow: hidden; /* required: clips .thumb to the card's border-radius */
   transition: box-shadow var(--t), border-left-color var(--t);
 }
 
@@ -1663,6 +1680,8 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   margin-right: 6px;
   background: var(--c-offline);
   transition: background var(--t);
+  -webkit-user-select: none;
+  user-select: none; /* decorative dot — prevent accidental text selection */
 }
 
 .channel-list-item.connected .status     { background: var(--c-online); }
@@ -1955,6 +1974,12 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 
   /* Unread marker line: more opaque */
   .unread-marker::before { background: color-mix(in srgb, var(--c-unread) 55%, transparent); }
+
+  /* Range slider: thicker track and stronger thumb ring for legibility */
+  input[type="range"]                             { height: 6px; }
+  input[type="range"]::-webkit-slider-runnable-track { height: 6px; }
+  input[type="range"]::-webkit-slider-thumb       { margin-top: -5px; } /* re-center 16px thumb on 6px track */
+  input[type="range"]::-moz-range-track           { height: 6px; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
