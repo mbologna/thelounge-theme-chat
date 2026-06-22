@@ -13,13 +13,20 @@
    Browsers that don't support @property silently ignore these declarations.
    ───────────────────────────────────────────────────────────────────────────── */
 @property --c-accent      { syntax: "<color>"; inherits: true; initial-value: #2563eb; }
+
 @property --c-unread      { syntax: "<color>"; inherits: true; initial-value: #dc2626; }
+
 @property --c-panel       { syntax: "<color>"; inherits: true; initial-value: #efece9; }
+
 @property --c-hover       { syntax: "<color>"; inherits: true; initial-value: #e9e5e1; }
+
 @property --c-text        { syntax: "<color>"; inherits: true; initial-value: #1c1917; }
+
 @property --c-soft        { syntax: "<color>"; inherits: true; initial-value: #6b6460; }
+
 @property --c-muted       { syntax: "<color>"; inherits: true; initial-value: #7b7570; }
-@property --c-border-mid  { syntax: "<color>"; inherits: true; initial-value: rgba(0,0,0,0.13); }
+
+@property --c-border-mid  { syntax: "<color>"; inherits: true; initial-value: rgb(0 0 0 / 13%); }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    1. Design tokens — light mode (default)
@@ -167,6 +174,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+
   /* Remove the blue tap flash on iOS/Android — we provide our own focus styles */
   -webkit-tap-highlight-color: transparent;
 }
@@ -179,7 +187,7 @@ body {
   background: var(--c-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizelegibility;
   font-feature-settings: "liga" 1, "kern" 1; /* ligatures + kerning for editorial feel */
 }
 
@@ -227,6 +235,7 @@ code, kbd, pre, .irc-monospace {
   #chat .toggle-content .thumb {
     filter: brightness(0.88) saturate(0.92);
   }
+
   /* Restore on hover so the lightbox/zoom interaction shows true colors */
   .msg .image-link:hover img,
   .msg .content img:hover,
@@ -249,9 +258,11 @@ code, kbd, pre, .irc-monospace {
   border-right: 1px solid var(--c-border);
   width: var(--sidebar-w);
   transition: transform var(--t);
+
   /* Promote to its own composited layer so mobile slide-in doesn't trigger
      a paint. will-change is scoped here and removed in reduced-motion. */
   will-change: transform;
+
   /* Prevent overscroll from chaining to the page or triggering pull-to-refresh */
   overscroll-behavior-y: contain;
 }
@@ -536,6 +547,7 @@ code, kbd, pre, .irc-monospace {
    Consecutive messages from the same sender skip the header entirely.
    Uses #chat prefix throughout to beat TheLounge's default specificity.
    ───────────────────────────────────────────────────────────────────────────── */
+
 /* contain:layout — new messages don't trigger full-page reflow.
    scrollbar-gutter:stable — reserves scrollbar space permanently so content
    width doesn't jump by ~4px when the scrollbar appears or disappears. */
@@ -661,6 +673,7 @@ code, kbd, pre, .irc-monospace {
   padding-left: 13px; /* 3px border + 13px = 16px from edge, keeps text aligned with other messages */
   background: color-mix(in srgb, var(--c-accent) 8%, transparent);
 }
+
 #chat .msg.self:hover {
   background: color-mix(in srgb, var(--c-accent) 12%, transparent);
 }
@@ -1033,6 +1046,7 @@ code, kbd, pre, .irc-monospace {
   padding-right: 8px;
   border-right: 1px solid var(--c-border-mid);
   line-height: var(--lh-tight);
+
   /* In newer TheLounge, #nick is a button that opens the nick-change dialog */
   background: none;
   border-top: none;
@@ -1059,6 +1073,7 @@ code, kbd, pre, .irc-monospace {
   resize: none;
   caret-color: var(--c-accent);
   transition: border-color var(--t), box-shadow var(--t), height var(--t);
+
   /* Progressive: Chrome 123+ auto-sizes the textarea to its content, replacing
      TheLounge's JS resize. Older browsers fall back to JS behavior unchanged. */
   field-sizing: content;
@@ -1142,6 +1157,7 @@ code, kbd, pre, .irc-monospace {
   transition: color var(--t), transform var(--t);
 }
 #chat .toggle-button:hover { color: var(--c-text); }
+
 #chat .toggle-button:focus-visible {
   outline: 2px solid var(--c-accent);
   outline-offset: 2px;
@@ -1256,6 +1272,7 @@ code {
   border-radius: var(--r);
   box-shadow: var(--shadow-md);
   outline: none;
+
   /* Own stacking context — prevents z-index races with message content */
   isolation: isolate;
 }
@@ -1451,6 +1468,7 @@ input[type="checkbox"]:checked {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 11px;
+
   /* Ensure the SVG checkmark prints in browsers that suppress backgrounds */
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
@@ -1532,9 +1550,11 @@ input[type="range"]::-moz-range-thumb {
 input[type="range"]:focus-visible {
   outline: none;
 }
+
 input[type="range"]:focus-visible::-webkit-slider-thumb {
   box-shadow: 0 0 0 1px var(--c-accent), 0 0 0 4px var(--c-accent-glow);
 }
+
 input[type="range"]:focus-visible::-moz-range-thumb {
   box-shadow: 0 0 0 1px var(--c-accent), 0 0 0 4px var(--c-accent-glow);
 }
@@ -1688,6 +1708,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 }
 
 .channel-list-item.connected .status     { background: var(--c-online); }
+
 .channel-list-item.away-from-channel .status,
 .channel-list-item.away .status          { background: var(--c-away); }
 
@@ -1801,6 +1822,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 
   /* Links: show URL in print */
   a::after { content: " (" attr(href) ")"; font-size: 0.85em; color: #555; }
+
   /* But not for nick buttons, nav links, or topic links where the URL is noise */
   #chat .from .user::after,
   #chat .header .topic a::after,
@@ -1899,6 +1921,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   input[type="radio"] {
     forced-color-adjust: none;
   }
+
   /* Restore semantic system colors for the unchecked border */
   input[type="checkbox"]:not(:checked),
   input[type="radio"]:not(:checked) {
@@ -2031,7 +2054,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 
   @media (prefers-color-scheme: dark) {
     .channel-list-item.active       { background: #1e3a5f; }
-    .channel-list-item.active:hover { background: rgba(30, 64, 175, 0.2); }
+    .channel-list-item.active:hover { background: rgb(30 64 175 / 20%); }
   }
 
   /* Own messages: flat very-light blue tint */
