@@ -18,7 +18,7 @@ jobs:
     with:
       node_version: lts/*
       package_manager: npm
-      test_command: "npm run check"
+      test_command: "check"
       enable_audit: true
       enable_release_drafter: true
 
