@@ -6,7 +6,7 @@
 [![license](https://img.shields.io/npm/l/thelounge-theme-chat.svg)](LICENSE)
 
 A warm, editorial IRC theme for [TheLounge](https://thelounge.chat/) with automatic
-light/dark switching, digest-style messages, and coloured avatar discs — pure CSS, no
+light/dark switching, digest-style messages, and coloured avatar discs. Pure CSS, no
 JavaScript.
 
 ---
@@ -74,7 +74,7 @@ npm test            # run the theme test suite (builds first)
 npm run check       # lint + test (what CI runs)
 ```
 
-The test suite (`test/theme.test.mjs`, Node's built-in runner — no extra deps) guards the
+The test suite (`test/theme.test.mjs`, Node's built-in runner with no extra deps) guards the
 theme's invariants: balanced CSS, automatic light/dark, all 32 nick colours in both modes,
 accessibility media queries, every `var()` resolves to a defined token, a valid `thelounge`
 manifest, and a successful minified build.
@@ -85,8 +85,8 @@ manifest, and a successful minified build.
 
 Part of a small family of TheLounge add-ons by [@mbologna](https://github.com/mbologna):
 
-- 🎨 **[thelounge-theme-chat](https://github.com/mbologna/thelounge-theme-chat)** — warm, editorial light/dark theme (this project)
-- 🔔 **[thelounge-plugin-apprise-push](https://github.com/mbologna/thelounge-plugin-apprise-push)** — push notifications via Apprise
+- 🎨 **[thelounge-theme-chat](https://github.com/mbologna/thelounge-theme-chat)**: a warm, editorial light/dark theme (this project)
+- 🔔 **[thelounge-plugin-apprise-push](https://github.com/mbologna/thelounge-plugin-apprise-push)**: push notifications via Apprise
 
 ---
 
