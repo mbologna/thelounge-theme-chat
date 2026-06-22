@@ -6,7 +6,7 @@ name: Publish to npm
 
 jobs:
   publish:
-    uses: mbologna/.github/.github/workflows/npm-publish.yml@17e62b3f3f9e7985d155f652d47162ffada15cb6 # main
+    uses: mbologna/.github/.github/workflows/npm-publish.yml@b9144ddda9cdf36ebba426f1314b544d5245e7ac # main
     with:
       node_version: lts/*
       package_manager: npm
