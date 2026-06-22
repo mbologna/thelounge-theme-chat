@@ -4,6 +4,10 @@ name: Publish to npm
   release:
     types: [published]
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   publish:
     uses: mbologna/.github/.github/workflows/npm-publish.yml@b9144ddda9cdf36ebba426f1314b544d5245e7ac # main
