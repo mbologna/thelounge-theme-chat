@@ -84,6 +84,10 @@
      (scrollbars, autofill, date pickers) auto-adapts to the active mode */
   color-scheme: light dark;
 
+  /* Accent color for un-customized form primitives: progress bars, file inputs,
+     search fields, and Firefox scrollbars pick this up automatically */
+  accent-color: var(--c-accent);
+
   /* ── TheLounge variable overrides ── */
   --body-color:             var(--c-text);
   --body-color-muted:       var(--c-muted);
@@ -197,6 +201,24 @@ code, kbd, pre, .irc-monospace {
   ::-webkit-scrollbar-thumb       { background: var(--c-muted); }
   ::-webkit-scrollbar-thumb:hover { background: var(--c-soft); }
   *                               { scrollbar-color: var(--c-muted) transparent; }
+
+  /* Dim images slightly in dark mode — full-brightness photos are jarring
+     against the warm dark background. Saturate is reduced to match the muted tone. */
+  .msg .image-link img,
+  .msg .content img {
+    filter: brightness(0.88) saturate(0.92);
+  }
+  /* Restore on hover so the lightbox/zoom interaction shows true colors */
+  .msg .image-link:hover img,
+  .msg .content img:hover {
+    filter: none;
+  }
+
+  /* Drag overlay: 10% accent tint is nearly invisible against the dark background,
+     bump to 18% so the drop-zone reads clearly */
+  #windows.drop-target::before {
+    background: rgb(96 165 250 / 18%);
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -210,6 +232,8 @@ code, kbd, pre, .irc-monospace {
   /* Promote to its own composited layer so mobile slide-in doesn't trigger
      a paint. will-change is scoped here and removed in reduced-motion. */
   will-change: transform;
+  /* Prevent overscroll from chaining to the page or triggering pull-to-refresh */
+  overscroll-behavior-y: contain;
 }
 
 /* Scroll-hint: a gradient at the foot of the channel list hints at overflow.
@@ -484,7 +508,7 @@ code, kbd, pre, .irc-monospace {
 /* contain:layout — new messages don't trigger full-page reflow.
    scrollbar-gutter:stable — reserves scrollbar space permanently so content
    width doesn't jump by ~4px when the scrollbar appears or disappears. */
-#chat .messages { padding: 6px 0 20px; contain: layout; scrollbar-gutter: stable; }
+#chat .messages { padding: 6px 0 20px; contain: layout; scrollbar-gutter: stable; overscroll-behavior-y: contain; }
 
 /* Make .msg a wrapping flex container */
 #chat .msg {
@@ -881,6 +905,7 @@ code, kbd, pre, .irc-monospace {
   flex: 1 1 auto;
   overflow-y: auto;
   padding: 6px 0;
+  overscroll-behavior-y: contain;
 }
 
 #chat .userlist .user {
@@ -1261,6 +1286,24 @@ textarea {
 input::placeholder,
 textarea::placeholder { color: var(--c-muted); opacity: 1; }
 
+/* Custom select arrow — strips the OS chrome and injects a themed chevron.
+   The SVG is URL-encoded inline so there's no external dependency. */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%236b6460' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23a8a29e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+}
+
 /* Unified focus ring — keyboard/screen-reader only (:focus-visible) */
 #form #input:focus-visible,
 input[type="text"]:focus-visible,
@@ -1350,6 +1393,67 @@ input[type="radio"]:focus-visible {
 input[type="checkbox"]:hover:not(:checked),
 input[type="radio"]:hover:not(:checked) {
   border-color: var(--c-accent);
+}
+
+/* ── Range slider ──
+   Cross-browser approach: reset the default, style the track and thumb
+   separately for WebKit (Chrome/Safari/Edge) and Firefox. */
+input[type="range"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--c-border-mid);
+  border-radius: 9999px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: background var(--t);
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: var(--c-border-mid);
+  border-radius: 9999px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  border: 2px solid var(--c-bg);
+  box-shadow: 0 0 0 1px var(--c-accent);
+  margin-top: -6px; /* center thumb on track */
+  transition: box-shadow var(--t), background var(--t);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: var(--c-border-mid);
+  border-radius: 9999px;
+  border: none;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  border: 2px solid var(--c-bg);
+  box-shadow: 0 0 0 1px var(--c-accent);
+  cursor: pointer;
+}
+
+input[type="range"]:focus-visible {
+  outline: none;
+}
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 1px var(--c-accent), 0 0 0 4px var(--c-accent-glow);
+}
+input[type="range"]:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 1px var(--c-accent), 0 0 0 4px var(--c-accent-glow);
 }
 
 .btn, button.btn {
@@ -1515,6 +1619,11 @@ input[type="radio"]:hover:not(:checked) {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes jump-to-bottom-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
 /* Only animate when the user has not requested reduced motion */
 @media (prefers-reduced-motion: no-preference) {
   .channel-list-item.highlight .badge {
@@ -1524,6 +1633,11 @@ input[type="radio"]:hover:not(:checked) {
   .unread-marker,
   .date-marker {
     animation: marker-fade-in 180ms ease;
+  }
+
+  /* FAB slides up from below when TheLounge reveals it */
+  .jump-to-bottom {
+    animation: jump-to-bottom-in 150ms ease;
   }
 }
 
@@ -1757,4 +1871,72 @@ input[type="radio"]:hover:not(:checked) {
   color: var(--c-soft);
   font-size: 12.5px;
   line-height: var(--lh-tight);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   30. color-mix() fallbacks for older browsers
+   Chrome <111, Firefox <113, Safari <16.2 don't support color-mix(). The theme
+   uses it in ~15 places for alpha-composited tints. Without a fallback those
+   declarations are silently dropped — borders vanish, self-message tint
+   disappears, the mention chip has no background. This @supports block provides
+   flat-color equivalents that preserve structure without exact alpha matching.
+   ───────────────────────────────────────────────────────────────────────────── */
+@supports not (color-mix(in srgb, red 50%, blue)) {
+  /* Active channel: approximate accent tint as a faint solid */
+  .channel-list-item.active       { background: #dbeafe; }   /* blue-100 */
+  .channel-list-item.active:hover { background: #bfdbfe; }   /* blue-200 */
+
+  @media (prefers-color-scheme: dark) {
+    .channel-list-item.active       { background: #1e3a5f; }
+    .channel-list-item.active:hover { background: #1e40af33; }
+  }
+
+  /* Own messages: flat very-light blue tint */
+  #chat .msg.self       { background: #eff6ff; }             /* blue-50 */
+  #chat .msg.self:hover { background: #dbeafe; }             /* blue-100 */
+
+  @media (prefers-color-scheme: dark) {
+    #chat .msg.self       { background: #1e3a5f; }
+    #chat .msg.self:hover { background: #1e3a8a; }
+  }
+
+  /* Inline mention chip: flat light red */
+  #chat .content .highlight {
+    background: #fee2e2;                                      /* red-100 */
+    border-color: #fca5a5;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #chat .content .highlight {
+      background: #450a0a;
+      border-color: #b91c1c;
+    }
+  }
+
+  /* Unread marker line: flat color instead of alpha-mixed */
+  .unread-marker::before { background: #fca5a5; }
+
+  @media (prefers-color-scheme: dark) {
+    .unread-marker::before { background: #b91c1c; }
+  }
+
+  /* Unread marker pill */
+  .unread-marker-text {
+    background: #fee2e2;
+    border-color: #fca5a5;
+  }
+
+  /* Settings sidebar active link */
+  .settings-menu a.active { background: #eff6ff; }
+
+  @media (prefers-color-scheme: dark) {
+    .settings-menu a.active { background: #1e3a5f; }
+  }
+
+  /* text selection highlight */
+  ::selection { background: #bfdbfe; }
+
+  @media (prefers-color-scheme: dark) {
+    ::selection { background: #1e3a8a; }
+  }
 }
