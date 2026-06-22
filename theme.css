@@ -199,6 +199,21 @@ code, kbd, pre, .irc-monospace {
   background: var(--c-panel);
   border-right: 1px solid var(--c-border);
   width: var(--sidebar-w);
+  transition: transform var(--t);
+}
+
+/* Scroll-hint: a gradient at the foot of the channel list hints at overflow.
+   Uses position:sticky on the ::after so it stays pinned to the visible
+   bottom of the scroll container without any JavaScript. */
+#sidebar::after {
+  content: "";
+  position: sticky;
+  bottom: 0;
+  display: block;
+  height: 32px;
+  margin-top: -32px;
+  background: linear-gradient(to bottom, transparent, var(--c-panel));
+  pointer-events: none;
 }
 
 /* "Jump to..." channel search — override TheLounge's hardcoded white-on-dark defaults */
@@ -527,10 +542,12 @@ code, kbd, pre, .irc-monospace {
 /* Note: :is() specificity equals its most-specific argument. All args here are
    attribute selectors (0,1,0), so specificity is uniform across the group. */
 #chat .msg:is(
-  [data-type="join"], [data-type="part"],  [data-type="quit"],
-  [data-type="kick"], [data-type="mode"],  [data-type="nick"],
-  [data-type="topic"],[data-type="whois"], [data-type="ctcp"],
-  [data-type="plugin"]
+  [data-type="join"],        [data-type="part"],    [data-type="quit"],
+  [data-type="kick"],        [data-type="mode"],    [data-type="nick"],
+  [data-type="topic"],       [data-type="whois"],   [data-type="ctcp"],
+  [data-type="plugin"],      [data-type="raw"],     [data-type="motd"],
+  [data-type="banlist"],     [data-type="ignorelist"],
+  [data-type="channellist"]
 ) {
   margin-top: 0;
 
@@ -897,6 +914,12 @@ code, kbd, pre, .irc-monospace {
   border-radius: var(--r);
   box-shadow: none;
   max-width: min(480px, 100%);
+  transition: box-shadow var(--t), border-left-color var(--t);
+}
+
+#chat .preview:hover .toggle-content {
+  box-shadow: var(--shadow-sm);
+  border-left-color: color-mix(in srgb, var(--c-accent) 70%, var(--c-text));
 }
 
 #chat .toggle-content .toggle-text { padding: 8px 12px; }
@@ -930,6 +953,35 @@ code, kbd, pre, .irc-monospace {
   transition: box-shadow var(--t), transform var(--t);
 }
 
+/* Lightbox hint: zoom icon appears in the corner of linked images on hover.
+   Margin moves to the wrapper so ::after can be positioned relative to the image. */
+.msg .image-link {
+  display: inline-block;
+  position: relative;
+  margin-top: 6px;
+  line-height: 0;
+  border-radius: var(--r);
+}
+.msg .image-link img { margin-top: 0; }
+
+.msg .image-link::after {
+  content: "⤢";
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  padding: 3px 6px;
+  background: rgb(0 0 0 / 60%);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1;
+  border-radius: var(--r-sm);
+  opacity: 0;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: opacity var(--t);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .msg .image-link:hover img,
   .msg .content img:hover {
@@ -937,6 +989,7 @@ code, kbd, pre, .irc-monospace {
     transform: scale(1.015);
     cursor: zoom-in;
   }
+  .msg .image-link:hover::after { opacity: 1; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1127,6 +1180,10 @@ button.btn:focus-visible,
   outline-offset: 2px;
 }
 
+/* Lock network-name to full-contrast text when keyboard-focused so the ring
+   doesn't compete with a mid-gray label color on hover */
+.network-name:focus-visible { color: var(--c-text); }
+
 /* White outline on accent-colored (blue) buttons — accent-on-accent would be invisible */
 #form #submit:focus-visible,
 .btn-primary:focus-visible {
@@ -1236,6 +1293,15 @@ button.btn:focus-visible,
     color: var(--c-soft);
   }
 
+  /* Image hover effects (zoom, lightbox icon) look wrong as sticky-hover on tap */
+  .msg .image-link:hover img,
+  .msg .content img:hover {
+    box-shadow: none;
+    transform: none;
+    cursor: auto;
+  }
+  .msg .image-link:hover::after { opacity: 0; }
+
   .channel-list-item.active:hover {
     background: color-mix(in srgb, var(--c-accent) 14%, var(--c-panel));
     color: var(--c-accent);
@@ -1283,10 +1349,20 @@ button.btn:focus-visible,
   50%       { box-shadow: 0 0 0 5px color-mix(in srgb, var(--c-unread) 10%, transparent); }
 }
 
+@keyframes marker-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* Only animate when the user has not requested reduced motion */
 @media (prefers-reduced-motion: no-preference) {
   .channel-list-item.highlight .badge {
     animation: mention-pulse 3s ease-in-out 3;
+  }
+
+  .unread-marker,
+  .date-marker {
+    animation: marker-fade-in 180ms ease;
   }
 }
 
@@ -1295,6 +1371,14 @@ button.btn:focus-visible,
    ───────────────────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   * { --t: 0ms !important; }
+
+  /* Grouped-message timestamps rely on an opacity transition to reveal on hover.
+     With motion disabled that transition is suppressed, so make them always
+     softly visible instead of requiring a hover to trigger the instant snap. */
+  #chat .msg.previous-source .time {
+    opacity: 0.4;
+    transition: none;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1406,4 +1490,31 @@ button.btn:focus-visible,
   /* Status dots */
   .channel-list-item .status          { forced-color-adjust: none; background: ButtonText; }
   .channel-list-item.connected .status { background: LinkText; }
+
+  /* Sidebar scroll-shadow gradient: forced-colors overrides custom properties,
+     turning the fade into a solid block. Opt out so it renders as intended. */
+  #sidebar::after { forced-color-adjust: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   27. IRC color legibility
+   mIRC color classes (.irc-fg-N / .irc-bg-N) carry hardcoded hues from a
+   1990s palette — some are invisible on this theme's backgrounds. The fixes
+   below remap only the problem cases; all others are left as-is.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Light mode: white foreground (color 0) is invisible on the warm off-white bg */
+#chat .content .irc-fg-0 { color: var(--c-soft); }
+
+@media (prefers-color-scheme: dark) {
+  /* Dark mode: black (1), navy (2), dark green (3), maroon (5), and dark purple (6)
+     all disappear on the warm dark background — remap to legible equivalents */
+  #chat .content .irc-fg-1 { color: var(--c-text);  } /* black       → primary text  */
+  #chat .content .irc-fg-2 { color: #818cf8;         } /* navy        → indigo-400    */
+  #chat .content .irc-fg-3 { color: #4ade80;         } /* dark green  → green-400     */
+  #chat .content .irc-fg-5 { color: #f87171;         } /* maroon      → red-400       */
+  #chat .content .irc-fg-6 { color: #c084fc;         } /* purple      → purple-400    */
+
+  /* Dark backgrounds that would make text invisible */
+  #chat .content .irc-bg-1 { background-color: var(--c-elevated); } /* black bg */
 }
