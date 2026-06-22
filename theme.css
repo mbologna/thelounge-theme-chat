@@ -159,6 +159,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-feature-settings: "liga" 1, "kern" 1; /* ligatures + kerning for editorial feel */
 }
 
 a {
@@ -427,16 +428,63 @@ code, kbd, pre, .irc-monospace {
   background: var(--c-hover);
 }
 
+/* ── Scroll-to-bottom FAB ──
+   TheLounge renders .jump-to-bottom when the user has scrolled up in history.
+   Style it as a small accent pill so it's visible but not intrusive. */
+.jump-to-bottom {
+  position: absolute;
+  bottom: 70px; /* above the input bar */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.jump-to-bottom .jump-to-bottom-btn,
+.jump-to-bottom button {
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+  border: none;
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: opacity var(--t), box-shadow var(--t);
+  white-space: nowrap;
+}
+
+.jump-to-bottom .jump-to-bottom-btn:hover,
+.jump-to-bottom button:hover {
+  opacity: 0.88;
+  box-shadow: var(--shadow-md);
+}
+
+/* ── File drag-and-drop overlay ──
+   TheLounge adds .drop-target to #windows when a file is dragged over the chat.
+   The ::before pseudo-element provides a full-area themed overlay so the user
+   knows drop is available without covering the underlying message text. */
+#windows.drop-target::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--c-accent) 10%, transparent);
+  border: 3px dashed var(--c-accent);
+  border-radius: var(--r-lg);
+  z-index: 100;
+  pointer-events: none;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    7. Messages — digest layout
    nick · HH:MM on its own header line, then message text below.
    Consecutive messages from the same sender skip the header entirely.
    Uses #chat prefix throughout to beat TheLounge's default specificity.
    ───────────────────────────────────────────────────────────────────────────── */
-/* contain:layout tells the browser this element's layout is independent from
-   the rest of the page — new messages arriving don't trigger full-page layout
-   recalculation. Safe here because no positioned descendants escape the box. */
-#chat .messages { padding: 6px 0 20px; contain: layout; }
+/* contain:layout — new messages don't trigger full-page reflow.
+   scrollbar-gutter:stable — reserves scrollbar space permanently so content
+   width doesn't jump by ~4px when the scrollbar appears or disappears. */
+#chat .messages { padding: 6px 0 20px; contain: layout; scrollbar-gutter: stable; }
 
 /* Make .msg a wrapping flex container */
 #chat .msg {
@@ -511,6 +559,7 @@ code, kbd, pre, .irc-monospace {
   width: auto;          /* override TheLounge's 55px */
   font-size: 11px;
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1; /* tabular numerals: HH:MM columns stay fixed-width */
   color: var(--c-muted);
   padding: 0 0 0 10px;
   -webkit-user-select: none;
@@ -918,6 +967,7 @@ code, kbd, pre, .irc-monospace {
   min-height: 36px;
   max-height: 200px;
   resize: none;
+  caret-color: var(--c-accent);
   transition: border-color var(--t), box-shadow var(--t), height var(--t);
 }
 
@@ -1252,6 +1302,56 @@ button.btn:focus-visible,
   outline-offset: 2px;
 }
 
+/* ── Custom checkbox & radio ──
+   appearance:none strips the OS control so we can draw our own.
+   The checked state uses a background SVG checkmark / filled disc injected
+   via background-image so no extra markup is needed. */
+input[type="checkbox"],
+input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--c-border-mid);
+  background: var(--c-bg);
+  cursor: pointer;
+  flex-shrink: 0;
+  vertical-align: -3px;
+  transition: border-color var(--t), background var(--t), box-shadow var(--t);
+}
+
+input[type="checkbox"] { border-radius: var(--r-sm); }
+input[type="radio"]    { border-radius: 50%; }
+
+input[type="checkbox"]:checked {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3 8 6.5 11.5 13 4.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 11px;
+}
+
+input[type="radio"]:checked {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='3.5' fill='%23fff'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
+  outline: none;
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px var(--c-accent-glow);
+}
+
+input[type="checkbox"]:hover:not(:checked),
+input[type="radio"]:hover:not(:checked) {
+  border-color: var(--c-accent);
+}
+
 .btn, button.btn {
   background: var(--c-elevated);
   border: 1px solid var(--c-border-mid);
@@ -1582,4 +1682,79 @@ button.btn:focus-visible,
 
   /* Dark backgrounds that would make text invisible */
   #chat .content .irc-bg-1 { background-color: var(--c-elevated); } /* black bg */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   28. Increased contrast (prefers-contrast: more)
+   macOS "Increase Contrast" and similar OS settings land here — between the
+   default theme and full forced-colors. Strengthens borders and lifts muted
+   text one step toward the primary text color without altering the palette.
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (prefers-contrast: more) {
+  :root {
+    --c-border:     rgb(0 0 0 / 22%);
+    --c-border-mid: rgb(0 0 0 / 35%);
+    --c-soft:       #3d3935; /* lifted from #6b6460 toward --c-text */
+    --c-muted:      #4a4542; /* lifted from #7b7570 */
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --c-border:     rgb(255 255 255 / 22%);
+      --c-border-mid: rgb(255 255 255 / 35%);
+      --c-soft:       #d6d3d1; /* lifted from #a8a29e toward --c-text */
+      --c-muted:      #b5b0ac; /* lifted from #79716c */
+    }
+  }
+
+  /* Strengthen interactive borders */
+  #form #input,
+  input[type="text"],
+  input[type="password"],
+  input[type="url"],
+  input[type="email"],
+  input[type="number"],
+  select,
+  textarea,
+  input[type="checkbox"],
+  input[type="radio"] {
+    border-width: 2px;
+  }
+
+  /* Sidebar channel item left-border: wider signal for active / unread */
+  .channel-list-item.active   { border-left-width: 3px; }
+  .channel-list-item.highlight { border-left-width: 3px; }
+
+  /* Unread marker line: more opaque */
+  .unread-marker::before { background: color-mix(in srgb, var(--c-unread) 55%, transparent); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   29. In-app notifications
+   TheLounge surfaces mention alerts via .notification elements when the window
+   is not focused. Style them as a small accent-tinted toast so they read
+   clearly without fighting the message content behind them.
+   ───────────────────────────────────────────────────────────────────────────── */
+.notification {
+  background: var(--c-elevated);
+  border: 1px solid var(--c-border-mid);
+  border-left: 3px solid var(--c-unread);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-md);
+  color: var(--c-text);
+  font-size: 13px;
+  padding: 10px 14px;
+  max-width: 320px;
+}
+
+.notification .title {
+  font-weight: var(--fw-semibold);
+  color: var(--c-unread);
+  margin-bottom: 2px;
+}
+
+.notification .body {
+  color: var(--c-soft);
+  font-size: 12.5px;
+  line-height: var(--lh-tight);
 }
