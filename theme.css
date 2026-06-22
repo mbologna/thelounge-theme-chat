@@ -45,6 +45,7 @@
   --c-notice:  #1d4ed8;
   --c-action:  #7c3aed;
   --c-danger:  #dc2626;
+  --c-code:    #a3431b;
 
   /* Typography */
   --font:      system-ui, -apple-system, "Segoe UI", helvetica, arial, sans-serif;
@@ -124,6 +125,7 @@
     --c-notice:  #93c5fd;
     --c-action:  #c4b5fd;
     --c-danger:  #fca5a5;
+    --c-code:    #fdba74;
     --overlay-bg-color: rgb(0 0 0 / 60%);
 
     /* Shadows are heavier on dark surfaces */
@@ -516,6 +518,43 @@ code, kbd, pre, .irc-monospace {
 
 #chat .msg[data-type="error"] .content { color: var(--c-danger); }
 
+/* ── Condensed status messages (collapsed joins/parts/quits) ──
+   TheLounge groups consecutive status events into one expandable summary row.
+   Style it to match the muted status look and hint at its toggle affordance. */
+#chat .msg[data-type="condensed"] { margin-top: 0; }
+
+#chat .condensed-summary .content {
+  color: var(--c-muted);
+  font-size: 12.5px;
+}
+
+#chat .condensed-summary .content:hover {
+  color: var(--c-soft);
+  text-decoration: none;
+}
+#chat .condensed-summary .toggle-button { color: var(--c-muted); }
+
+/* Expanded children sit slightly inset so the group reads as one unit */
+#chat .msg[data-type="condensed"] .msg { padding-left: 16px; }
+
+/* ── Whois response: a definition-list rendered as a tidy key/value card ── */
+#chat .msg[data-type="whois"] .content { color: var(--c-text); }
+
+.whois {
+  display: grid;
+  grid-template-columns: max-content auto;
+  gap: 2px 16px;
+  margin: 4px 0 2px;
+  padding: 10px 12px;
+  background: var(--c-elevated);
+  border: 1px solid var(--c-border);
+  border-left: 2px solid var(--c-accent);
+  border-radius: var(--r);
+  max-width: min(480px, 100%);
+}
+.whois dt { color: var(--c-muted); font-weight: var(--fw-medium); }
+.whois dd { color: var(--c-text); margin: 0; }
+
 /* ─────────────────────────────────────────────────────────────────────────────
    9. Nick colours — light mode
    ───────────────────────────────────────────────────────────────────────────── */
@@ -816,29 +855,43 @@ code, kbd, pre, .irc-monospace {
 
 /* ─────────────────────────────────────────────────────────────────────────────
    13. Link previews
+   Modern TheLounge renders previews as `.preview > .toggle-content`, where
+   `.toggle-content` is the visible card holding `.thumb` + `.toggle-text`
+   (`.head` title / `.body` description). The default card background is a
+   hardcoded light grey, so it must be re-themed for dark mode to work.
    ───────────────────────────────────────────────────────────────────────────── */
-.preview {
-  margin: 5px 0 3px;
-  border-left: 2px solid var(--c-accent);
-  padding: 6px 12px;
-  border-radius: 0 var(--r) var(--r) 0;
+#chat .preview { margin: 6px 0 2px; }
+
+#chat .toggle-content {
   background: var(--c-elevated);
-  max-width: min(460px, 100%);
+  border: 1px solid var(--c-border);
+  border-left: 2px solid var(--c-accent);
+  border-radius: var(--r);
+  box-shadow: none;
+  max-width: min(480px, 100%);
 }
 
-.preview .thumb {
-  float: right;
-  margin-left: 12px;
-  width: 72px;
-  height: 72px;
-  border-radius: var(--r-sm);
+#chat .toggle-content .toggle-text { padding: 8px 12px; }
+
+#chat .toggle-content .head .more,
+#chat .toggle-content .head { font-weight: var(--fw-semibold); font-size: 13.5px; color: var(--c-text); }
+#chat .toggle-text .body          { font-size: 12.5px; color: var(--c-soft); margin-top: 2px; line-height: var(--lh-tight); }
+#chat .toggle-content .more       { color: var(--c-accent); font-weight: var(--fw-medium); }
+#chat .toggle-type-error          { color: var(--c-muted); }
+
+/* Thumbnail on the card's leading edge */
+#chat .toggle-content .thumb {
+  border-radius: var(--r-sm) 0 0 var(--r-sm);
   object-fit: cover;
-  overflow: hidden;
-  flex-shrink: 0;
 }
-.preview .title       { font-weight: var(--fw-semibold); font-size: 13.5px; color: var(--c-text); }
-.preview .description { font-size: 12.5px; color: var(--c-soft); margin-top: 2px; }
-.preview .link        { display: block; font-size: 11px; color: var(--c-muted); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Caret toggle for collapsing/expanding previews */
+#chat .toggle-button,
+#chat .toggle-content .more-caret {
+  color: var(--c-muted);
+  transition: color var(--t), transform var(--t);
+}
+#chat .toggle-button:hover { color: var(--c-text); }
 
 .msg .image-link img,
 .msg .content img {
@@ -850,38 +903,85 @@ code, kbd, pre, .irc-monospace {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   14. Inline code
+   14. Code — inline & blocks, text selection
    ───────────────────────────────────────────────────────────────────────────── */
-.irc-monospace {
+.irc-monospace,
+code {
   background: var(--c-elevated);
   border-radius: 3px;
   padding: 1px 4px;
   border: 1px solid var(--c-border-mid);
+  color: var(--c-code);
+}
+
+/* Multi-line code blocks (```fenced``` and IRC monospace blocks) */
+#chat pre,
+#chat .msg[data-type="monospace_block"] .text {
+  display: block;
+  background: var(--c-elevated);
+  border: 1px solid var(--c-border-mid);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  margin: 6px 0 2px;
+  color: var(--c-text);
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  line-height: 1.5;
+  overflow-x: auto;
+  word-break: normal;
+  white-space: pre;
+  max-width: 100%;
+}
+
+/* A code block already carries the block styling — strip the inline chip look */
+#chat pre code,
+#chat pre .irc-monospace {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--c-accent) 28%, transparent);
+  color: var(--c-text);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   15. Autocomplete
+   15. Floating menus — autocomplete, right-click context menu, mentions popup
+   These share TheLounge's hardcoded white-on-dark defaults, so they must be
+   re-themed together to read correctly in dark mode.
    ───────────────────────────────────────────────────────────────────────────── */
-.autocomplete-popup {
+.textcomplete-menu,
+#context-menu,
+.mentions-popup {
   background: var(--c-elevated);
   border: 1px solid var(--c-border-mid);
   border-radius: var(--r);
   box-shadow: var(--shadow-md);
-  overflow: hidden;
+  outline: none;
 }
 
-.autocomplete-popup li {
-  padding: 5px 12px;
+.textcomplete-item,
+.context-menu-item {
   color: var(--c-soft);
+  border-radius: var(--r-sm);
   cursor: pointer;
   transition: background var(--t), color var(--t);
 }
 
-.autocomplete-popup li:hover,
-.autocomplete-popup li.active {
+.textcomplete-item a { color: inherit; }
+
+.textcomplete-item:hover,
+.textcomplete-item:focus,
+.textcomplete-menu .active,
+.context-menu-item:hover,
+.context-menu-item.active {
   background: var(--c-hover);
   color: var(--c-text);
 }
+
+.context-menu-divider { background: var(--c-border-mid); }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    16. Tooltips
