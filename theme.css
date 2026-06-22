@@ -205,14 +205,17 @@ code, kbd, pre, .irc-monospace {
   *                               { scrollbar-color: var(--c-muted) transparent; }
 
   /* Dim images slightly in dark mode — full-brightness photos are jarring
-     against the warm dark background. Saturate is reduced to match the muted tone. */
+     against the warm dark background. Saturate is reduced to match the muted tone.
+     Also applies to link-preview thumbnails (.thumb) for consistent treatment. */
   .msg .image-link img,
-  .msg .content img {
+  .msg .content img,
+  #chat .toggle-content .thumb {
     filter: brightness(0.88) saturate(0.92);
   }
   /* Restore on hover so the lightbox/zoom interaction shows true colors */
   .msg .image-link:hover img,
-  .msg .content img:hover {
+  .msg .content img:hover,
+  #chat .preview:hover .toggle-content .thumb {
     filter: none;
   }
 
@@ -274,6 +277,9 @@ code, kbd, pre, .irc-monospace {
   overflow-y: auto;
   max-height: 320px;
   overscroll-behavior-y: contain;
+  isolation: isolate;
+  position: relative;
+  z-index: 50;
 }
 
 .jump-to-result {
@@ -487,6 +493,12 @@ code, kbd, pre, .irc-monospace {
   box-shadow: var(--shadow-md);
 }
 
+.jump-to-bottom .jump-to-bottom-btn:focus-visible,
+.jump-to-bottom button:focus-visible {
+  outline: 2px solid #fff;    /* white ring on accent background, same as .btn-primary */
+  outline-offset: 2px;
+}
+
 /* ── File drag-and-drop overlay ──
    TheLounge adds .drop-target to #windows when a file is dragged over the chat.
    The ::before pseudo-element provides a full-area themed overlay so the user
@@ -511,7 +523,7 @@ code, kbd, pre, .irc-monospace {
 /* contain:layout — new messages don't trigger full-page reflow.
    scrollbar-gutter:stable — reserves scrollbar space permanently so content
    width doesn't jump by ~4px when the scrollbar appears or disappears. */
-#chat .messages { padding: 6px 0 20px; contain: layout; scrollbar-gutter: stable; overscroll-behavior-y: contain; scroll-behavior: auto; }
+#chat .messages { padding: 6px 0 20px; contain: layout; scrollbar-gutter: stable; overscroll-behavior-y: contain; }
 
 /* Make .msg a wrapping flex container */
 #chat .msg {
@@ -897,6 +909,7 @@ code, kbd, pre, .irc-monospace {
   font-size: 11px;
   letter-spacing: 0.05em;
   padding: 1px 10px;
+  text-wrap: balance;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1109,6 +1122,11 @@ code, kbd, pre, .irc-monospace {
   transition: color var(--t), transform var(--t);
 }
 #chat .toggle-button:hover { color: var(--c-text); }
+#chat .toggle-button:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
 
 .msg .image-link img,
 .msg .content img {
@@ -1848,6 +1866,9 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 
   /* Range thumb: must stay visually distinct from the track */
   input[type="range"] { forced-color-adjust: none; }
+
+  /* Notification toast: left border carries semantic meaning (unread alert) */
+  .notification { border-left-color: Highlight; }
 
   /* Custom checkbox/radio: appearance:none stripped the OS control — under
      forced-colors the background-image SVG is overridden, making the
