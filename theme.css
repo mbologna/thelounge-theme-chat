@@ -501,6 +501,20 @@ code, kbd, pre, .irc-monospace {
 /* Self-highlight: own message that also mentions you — highlight wins over self styling */
 #chat .chat-view .msg.highlight.self { background: var(--c-hl-bg); border-left-color: var(--c-hl-border); }
 
+/* ── Inline mention chip: your nick highlighted within the message body ──
+   TheLounge wraps your nick in a .highlight span inside .content. Styling it
+   separately from the row-level highlight makes the mention pop out of dense
+   lines without re-reading every word. */
+#chat .content .highlight {
+  background: color-mix(in srgb, var(--c-unread) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c-unread) 28%, transparent);
+  border-radius: 3px;
+  padding: 0 3px;
+  color: var(--c-unread);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    8. Message types
    ───────────────────────────────────────────────────────────────────────────── */
@@ -913,6 +927,16 @@ code, kbd, pre, .irc-monospace {
   max-height: 320px;
   border-radius: var(--r);
   margin-top: 6px;
+  transition: box-shadow var(--t), transform var(--t);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .msg .image-link:hover img,
+  .msg .content img:hover {
+    box-shadow: var(--shadow-md);
+    transform: scale(1.015);
+    cursor: zoom-in;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1225,7 +1249,34 @@ button.btn:focus-visible,
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   22. Animations
+   22. Status indicators
+   --c-online / --c-away / --c-offline tokens are consumed here for the first time.
+   TheLounge renders a .status dot on the lobby/server row and .away on userlist users.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Away users in the userlist: dimmed so online users read first visually */
+#chat .userlist .user.away {
+  opacity: 0.45;
+}
+
+/* Connection status dot on the lobby/network row in the sidebar.
+   TheLounge places a small .status span inside the lobby channel-list-item. */
+.channel-list-item .status {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 6px;
+  background: var(--c-offline);
+  transition: background var(--t);
+}
+
+.channel-list-item.connected .status     { background: var(--c-online); }
+.channel-list-item.away-from-channel .status,
+.channel-list-item.away .status          { background: var(--c-away); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   23. Animations
    ───────────────────────────────────────────────────────────────────────────── */
 @keyframes mention-pulse {
   0%, 100% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--c-unread) 30%, transparent); }
@@ -1240,8 +1291,119 @@ button.btn:focus-visible,
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   23. Reduced motion
+   24. Reduced motion
    ───────────────────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   * { --t: 0ms !important; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   25. Print
+   Strip navigation chrome and restore timestamps so chat logs print cleanly.
+   ───────────────────────────────────────────────────────────────────────────── */
+@media print {
+  /* Hide all non-content UI */
+  #sidebar,
+  #chat .userlist,
+  #form,
+  .unread-marker,
+  #chat .header button,
+  #chat .toggle-button { display: none !important; }
+
+  /* Flatten backgrounds to black-on-white */
+  body,
+  #windows,
+  #chat .messages,
+  #chat .header { background: #fff !important; color: #000 !important; box-shadow: none !important; }
+
+  #chat .msg { background: none !important; transition: none !important; }
+
+  /* Always show timestamps — reveal the hover-only ones on grouped messages */
+  #chat .msg.previous-source .time {
+    position: static !important;
+    opacity: 1 !important;
+    display: inline !important;
+    padding-left: 8px;
+  }
+
+  /* Preserve left-border semantic signals but in neutral ink */
+  #chat .msg.self                      { border-left-color: #888 !important; background: none !important; }
+  #chat .chat-view .msg.highlight      { background: #f0f0f0 !important; border-left-color: #000 !important; filter: none !important; }
+  #chat .chat-view .msg.highlight.self { background: #f0f0f0 !important; }
+  #chat .content .highlight            { background: #e8e8e8 !important; color: #000 !important; border-color: #aaa !important; }
+
+  /* Links: show URL in print */
+  a::after { content: " (" attr(href) ")"; font-size: 0.85em; color: #555; }
+  /* But not for nick buttons, nav links, or topic links where the URL is noise */
+  #chat .from .user::after,
+  #chat .header .topic a::after,
+  .settings-menu a::after,
+  #footer a::after { content: none; }
+
+  /* Avoid splitting a message across a page break */
+  #chat .msg { break-inside: avoid; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   26. Forced colors (high-contrast mode)
+   Windows High Contrast and similar modes override color-mix(), rgba(), and
+   custom properties — losing semantic signal in borders and backgrounds. This
+   block restores meaning using CSS system keywords so the theme still
+   communicates unread / active / mention state when colors are overridden.
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (forced-colors: active) {
+  /* Active channel: preserve the accent-left-border selection indicator */
+  .channel-list-item.active {
+    border-left-color: Highlight;
+    color: Highlight;
+  }
+
+  /* Mention badge: must stay visually distinct — opt out of forced-colors */
+  .channel-list-item.highlight .badge {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  /* Own messages: keep the left border as the only visual marker */
+  #chat .msg.self { border-left-color: Highlight; }
+
+  /* Highlight / mention row */
+  #chat .chat-view .msg.highlight {
+    background: Mark;
+    color: MarkText;
+    border-left-color: Highlight;
+    filter: none;
+  }
+
+  /* Inline mention chip */
+  #chat .content .highlight {
+    forced-color-adjust: none;
+    background: Mark;
+    color: MarkText;
+    border-color: Highlight;
+  }
+
+  /* NEW MESSAGES marker — opt out so it stays visually prominent */
+  .unread-marker-text {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+  .unread-marker-text::before { background: HighlightText; }
+
+  /* Submit button must stay clearly distinguishable from ghost buttons */
+  #form #submit {
+    forced-color-adjust: none;
+    background: ButtonText;
+    color: ButtonFace;
+  }
+
+  /* Preview card accent border */
+  #chat .toggle-content { border-left-color: Highlight; }
+
+  /* Status dots */
+  .channel-list-item .status          { forced-color-adjust: none; background: ButtonText; }
+  .channel-list-item.connected .status { background: LinkText; }
 }
