@@ -860,6 +860,9 @@ code, kbd, pre, .irc-monospace {
   user-select: none;
 }
 
+/* Extra gap when the date badge sits directly above the NEW MESSAGES marker */
+.date-marker + .unread-marker { margin-top: 24px; }
+
 .unread-marker::before {
   content: "";
   position: absolute;
