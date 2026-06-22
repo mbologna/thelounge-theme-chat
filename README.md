@@ -16,6 +16,8 @@ A warm, editorial IRC theme for [TheLounge](https://thelounge.chat) with automat
 - **Unread marker pill**: rounded pill with a filled dot and tinted background instead of plain floating text
 - **Active channel accent**: active channel gets an accent-tinted background and coloured name instead of a flat shade shift
 - **Accessibility**: `prefers-reduced-motion` disables all animations/transitions; `:focus-visible` replaces `:focus` (no mouse-click rings); larger touch targets on coarse-pointer devices
+- **Fully themed surfaces**: right-click context menus, autocomplete, mention popups, link previews, condensed join/part summaries, `/whois` cards and fenced code blocks all follow the palette in both modes (no stray white panels in dark mode)
+- **Selection & code**: tinted text selection and warm syntax-friendly inline/block `code` colours
 
 <!-- screenshot -->
 
@@ -34,7 +36,15 @@ Or add it via TheLounge's web UI under **Settings → Packages**.
 npm install
 npm run lint        # check CSS
 npm run lint:fix    # auto-fix
+npm run build       # minify theme.css → theme.min.css
+npm test            # run the theme test suite (builds first)
+npm run check       # lint + test (what CI runs)
 ```
+
+The test suite (`test/theme.test.mjs`, Node's built-in runner — no extra deps)
+guards the theme's invariants: balanced CSS, automatic light/dark, all 32 nick
+colours in both modes, accessibility media queries, every `var()` resolves to a
+defined token, a valid `thelounge` manifest, and a successful minified build.
 
 ## License
 

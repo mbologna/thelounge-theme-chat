@@ -1,5 +1,6 @@
 .github/
 .stylelintrc.yml
+test/
 *.png
 *.jpg
 *.gif
