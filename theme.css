@@ -892,8 +892,8 @@ code, kbd, pre, .irc-monospace {
   align-items: center;
   gap: 5px;
   white-space: nowrap;
-  background: color-mix(in srgb, var(--c-unread) 12%, var(--c-bg));
-  border: 1px solid color-mix(in srgb, var(--c-unread) 25%, transparent);
+  background: color-mix(in srgb, var(--c-unread) 20%, var(--c-bg));
+  border: 1px solid color-mix(in srgb, var(--c-unread) 55%, transparent);
   color: var(--c-unread);
   font-size: 10.5px;
   font-weight: var(--fw-semibold);
@@ -901,7 +901,6 @@ code, kbd, pre, .irc-monospace {
   text-transform: uppercase;
   padding: 2px 10px 2px 8px;
   border-radius: 9999px;
-  text-wrap: balance;   /* balance short pill text across both lines if it wraps */
 }
 
 .unread-marker-text::before {
