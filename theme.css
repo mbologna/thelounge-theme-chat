@@ -2088,7 +2088,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   /* Unread marker pill: background uses var(--c-bg) so no fallback needed;
      border uses color-mix so provide a solid-color approximation */
   .unread-marker-text {
-    border-color: rgba(220, 38, 38, 0.6);
+    border-color: rgb(220 38 38 / 60%);
   }
 
   /* Settings sidebar active link */
@@ -2106,22 +2106,22 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   }
 
   /* Highlight badge ring */
-  .channel-list-item.highlight .badge { box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3); }
+  .channel-list-item.highlight .badge { box-shadow: 0 0 0 2px rgb(220 38 38 / 30%); }
 
   /* File-drop overlay tint */
-  #windows.drop-target::before { background: rgba(37, 99, 235, 0.1); }
+  #windows.drop-target::before { background: rgb(37 99 235 / 10%); }
 
   /* Preview card hover accent border */
   #chat .preview:hover .toggle-content { border-left-color: var(--c-accent); }
 
   /* Mention badge pulse animation */
   @keyframes mention-pulse {
-    0%, 100% { box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3); }
-    50%       { box-shadow: 0 0 0 5px rgba(220, 38, 38, 0.1); }
+    0%, 100% { box-shadow: 0 0 0 2px rgb(220 38 38 / 30%); }
+    50%       { box-shadow: 0 0 0 5px rgb(220 38 38 / 10%); }
   }
 
   /* Unread marker line inside prefers-contrast */
   @media (prefers-contrast: more) {
-    .unread-marker::before { background: rgba(220, 38, 38, 0.55); }
+    .unread-marker::before { background: rgb(220 38 38 / 55%); }
   }
 }
