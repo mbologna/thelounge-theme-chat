@@ -865,16 +865,21 @@ code, kbd, pre, .irc-monospace {
 /* ─────────────────────────────────────────────────────────────────────────────
    10. Unread / date markers
    ───────────────────────────────────────────────────────────────────────────── */
-.unread-marker {
+#chat .unread-marker {
   position: relative;
+  display: block;    /* override display:flex from #chat .msg */
+  padding: 0;        /* override padding:0 16px from #chat .msg */
   text-align: center;
   margin: 10px 0 4px;
   -webkit-user-select: none;
   user-select: none;
 }
 
+/* Specificity guard: #chat .msg:not(.previous-source) sets margin-top:18px at (1,2,0) */
+#chat .msg.unread-marker { margin-top: 10px; }
+
 /* Extra gap when the date badge sits directly above the NEW MESSAGES marker */
-.date-marker + .unread-marker { margin-top: 24px; }
+#chat .date-marker + .unread-marker { margin-top: 24px; }
 
 .unread-marker::before {
   content: "";
@@ -912,13 +917,18 @@ code, kbd, pre, .irc-monospace {
   flex-shrink: 0;
 }
 
-.date-marker {
+#chat .date-marker {
   position: relative;
+  display: block;    /* override display:flex from #chat .msg */
+  padding: 0;        /* override padding:0 16px from #chat .msg */
   text-align: center;
   margin: 16px 0 4px;
   -webkit-user-select: none;
   user-select: none;
 }
+
+/* Specificity guard: #chat .msg:not(.previous-source) sets margin-top:18px at (1,2,0) */
+#chat .msg.date-marker { margin-top: 16px; }
 
 .date-marker::before {
   content: "";
