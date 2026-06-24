@@ -268,9 +268,9 @@ code, kbd, pre, .irc-monospace {
 }
 
 /* Scroll-hint: a gradient at the foot of the channel list hints at overflow.
-   Uses position:sticky on the ::after so it stays pinned to the visible
-   bottom of the scroll container without any JavaScript. */
-#sidebar::after {
+   Must be on .scrollable-area::after (not #sidebar::after) so it stays
+   inside the scroll container and does not overlap the #footer buttons. */
+#sidebar .scrollable-area::after {
   content: "";
   position: sticky;
   bottom: 0;
@@ -688,7 +688,7 @@ code, kbd, pre, .irc-monospace {
 #chat .chat-view .msg.highlight .content { color: var(--c-text); font-style: normal; border-left: none; }
 
 /* Self-highlight: own message that also mentions you — highlight wins over self styling */
-#chat .chat-view .msg.highlight.self { background: var(--c-hl-bg); border-left-color: var(--c-hl-border); }
+#chat .chat-view .msg.highlight.self { background: var(--c-hl-bg); border-left: 2px solid var(--c-hl-border); padding-left: 14px; }
 
 /* ── Inline mention chip: your nick highlighted within the message body ──
    TheLounge wraps your nick in a .highlight span inside .content. Styling it
@@ -892,8 +892,8 @@ code, kbd, pre, .irc-monospace {
   align-items: center;
   gap: 5px;
   white-space: nowrap;
-  background: color-mix(in srgb, var(--c-unread) 20%, var(--c-bg));
-  border: 1px solid color-mix(in srgb, var(--c-unread) 55%, transparent);
+  background: var(--c-bg);
+  border: 1px solid color-mix(in srgb, var(--c-unread) 60%, transparent);
   color: var(--c-unread);
   font-size: 10.5px;
   font-weight: var(--fw-semibold);
@@ -2085,10 +2085,10 @@ input[type="range"]:focus-visible::-moz-range-thumb {
     .unread-marker::before { background: #b91c1c; }
   }
 
-  /* Unread marker pill */
+  /* Unread marker pill: background uses var(--c-bg) so no fallback needed;
+     border uses color-mix so provide a solid-color approximation */
   .unread-marker-text {
-    background: #fee2e2;
-    border-color: #fca5a5;
+    border-color: rgba(220, 38, 38, 0.6);
   }
 
   /* Settings sidebar active link */
