@@ -2104,4 +2104,24 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   @media (prefers-color-scheme: dark) {
     ::selection { background: #1e3a8a; }
   }
+
+  /* Highlight badge ring */
+  .channel-list-item.highlight .badge { box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3); }
+
+  /* File-drop overlay tint */
+  #windows.drop-target::before { background: rgba(37, 99, 235, 0.1); }
+
+  /* Preview card hover accent border */
+  #chat .preview:hover .toggle-content { border-left-color: var(--c-accent); }
+
+  /* Mention badge pulse animation */
+  @keyframes mention-pulse {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3); }
+    50%       { box-shadow: 0 0 0 5px rgba(220, 38, 38, 0.1); }
+  }
+
+  /* Unread marker line inside prefers-contrast */
+  @media (prefers-contrast: more) {
+    .unread-marker::before { background: rgba(220, 38, 38, 0.55); }
+  }
 }
