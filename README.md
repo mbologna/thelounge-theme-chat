@@ -79,6 +79,35 @@ theme's invariants: balanced CSS, automatic light/dark, all 32 nick colours in b
 accessibility media queries, every `var()` resolves to a defined token, a valid `thelounge`
 manifest, and a successful minified build.
 
+### Testing a local build in a running TheLounge instance
+
+After `npm run build`, install the local package with `thelounge install` (or `yarn add` in
+TheLounge's packages directory):
+
+```sh
+npm pack   # produces thelounge-theme-chat-<version>.tgz
+thelounge install ./thelounge-theme-chat-<version>.tgz
+```
+
+**Yarn cache trap — same version, changed files:** yarn caches packages by content hash. If
+you repack the same version number, the new tgz gets a different hash but yarn finds a stale
+cache entry from the previous install and silently skips extraction, serving the old CSS.
+
+Two workarounds:
+
+1. **Bump the patch version** before repacking (`1.3.0` → `1.3.1`). Yarn's cache key
+   includes the version, so a new version always forces a fresh extract.
+
+2. **Clear the cache manually** before reinstalling (no version bump needed):
+
+   ```sh
+   yarn cache clean thelounge-theme-chat
+   rm -rf ~/.cache/yarn/v6/npm-thelounge-theme-chat-*
+   # also wipe the lockfile if yarn add is used directly in the packages dir:
+   rm -f /path/to/thelounge/packages/yarn.lock
+   thelounge install ./thelounge-theme-chat-<version>.tgz
+   ```
+
 ---
 
 ## Related
