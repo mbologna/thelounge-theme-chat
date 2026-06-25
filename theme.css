@@ -864,91 +864,93 @@ code, kbd, pre, .irc-monospace {
 
 /* ─────────────────────────────────────────────────────────────────────────────
    10. Unread / date markers
+   Strategy: mirror TheLounge's own approach — position:absolute full-width line
+   behind the pill, pill centered with text-align, pill elevated with z-index.
+   This avoids any cascade fight with the default style.css.
    ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Unread marker container ──────────────────────────────────────────────── */
 #chat .unread-marker {
-  display: flex;              /* keep flex, but own it */
-  align-items: center;        /* override align-items:baseline from #chat .msg */
-  flex-wrap: nowrap;          /* override flex-wrap:wrap from #chat .msg */
-  padding: 0 16px;
+  position: relative;       /* anchor for ::before absolute line */
+  display: block;
+  text-align: center;
+  padding: 4px 0;
   margin: 10px 0 4px;
   -webkit-user-select: none;
   user-select: none;
 }
 
-/* Specificity guard: #chat .msg:not(.previous-source) sets margin-top:18px at (1,2,0) */
-#chat .msg.unread-marker { margin-top: 10px; }
-
-/* Markers are separators, not interactive rows — suppress hover highlight and pointer */
-#chat .msg.unread-marker:hover { background: transparent; cursor: default; }
-
-/* Extra gap when the date badge sits directly above the NEW MESSAGES marker */
+/* Extra gap when a date badge sits directly above */
 #chat .date-marker + .unread-marker { margin-top: 24px; }
 
-/* #chat prefix raises specificity to (1,1,1) to beat the default style.css rule
-   `#chat .unread-marker:before { position: absolute; … }` which is also (1,1,1)
-   but ours appears later in the cascade, so we win. */
-#chat .unread-marker::before,
-#chat .unread-marker::after {
+/* Full-width horizontal rule (matches default approach, no cascade conflict) */
+#chat .unread-marker::before {
   content: "";
-  position: static;  /* override default's position:absolute */
-  flex: 1;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   height: 1px;
   background: color-mix(in srgb, var(--c-unread) 30%, transparent);
+  z-index: 0;
+  border: none;             /* reset default's border-top */
 }
 
+/* Suppress unused ::after */
+#chat .unread-marker::after { content: none; }
+
+/* ── Unread marker pill ───────────────────────────────────────────────────── */
 .unread-marker-text {
+  position: relative;
+  z-index: 1;               /* float above the ::before line */
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   white-space: nowrap;
+  background: var(--c-bg);  /* mask the line behind the pill */
   border: 1px solid color-mix(in srgb, var(--c-unread) 60%, transparent);
   color: var(--c-unread);
   font-size: 10.5px;
   font-weight: var(--fw-semibold);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 2px 10px 2px 8px;
+  padding: 2px 10px;
   border-radius: 9999px;
 }
 
-.unread-marker-text::before {
-  content: "";
-  width: 5px;
-  height: 5px;
-  background: var(--c-unread);
-  border-radius: 9999px;
-  flex-shrink: 0;
-}
-
+/* ── Date marker container ────────────────────────────────────────────────── */
 #chat .date-marker {
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  padding: 0 16px;
+  position: relative;       /* anchor for ::before absolute line */
+  display: block;
+  text-align: center;
+  padding: 4px 0;
   margin: 16px 0 4px;
   -webkit-user-select: none;
   user-select: none;
 }
 
-/* Specificity guard: #chat .msg:not(.previous-source) sets margin-top:18px at (1,2,0) */
-#chat .msg.date-marker { margin-top: 16px; }
-
-/* Markers are separators, not interactive rows — suppress hover highlight and pointer */
-#chat .msg.date-marker:hover { background: transparent; cursor: default; }
-
-/* #chat prefix raises specificity to (1,1,1) to beat the default style.css rule
-   `#chat .date-marker:before { position: absolute; … }` which is also (1,1,1)
-   but ours appears later in the cascade, so we win. */
-#chat .date-marker::before,
-#chat .date-marker::after {
+/* Full-width horizontal rule (matches default approach, no cascade conflict) */
+#chat .date-marker::before {
   content: "";
-  position: static;  /* override default's position:absolute */
-  flex: 1;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   height: 1px;
   background: var(--c-border);
+  z-index: 0;
+  border: none;             /* reset default's border-top */
 }
 
+/* Suppress unused ::after */
+#chat .date-marker::after { content: none; }
+
+/* ── Date marker pill ─────────────────────────────────────────────────────── */
 .date-marker-text {
+  position: relative;
+  z-index: 1;               /* float above the ::before line */
   display: inline-block;
   background: var(--c-elevated);
   border: 1px solid var(--c-border);
@@ -2015,8 +2017,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   .channel-list-item.highlight { border-left-width: 3px; }
 
   /* Unread marker line: more opaque */
-  #chat .unread-marker::before,
-  #chat .unread-marker::after { background: color-mix(in srgb, var(--c-unread) 55%, transparent); }
+  #chat .unread-marker::before { background: color-mix(in srgb, var(--c-unread) 55%, transparent); }
 
   /* Range slider: thicker track and stronger thumb ring for legibility */
   input[type="range"]                             { height: 6px; }
@@ -2097,12 +2098,10 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   }
 
   /* Unread marker line: flat color instead of alpha-mixed */
-  #chat .unread-marker::before,
-  #chat .unread-marker::after { background: #fca5a5; }
+  #chat .unread-marker::before { background: #fca5a5; }
 
   @media (prefers-color-scheme: dark) {
-    #chat .unread-marker::before,
-    #chat .unread-marker::after { background: #b91c1c; }
+    #chat .unread-marker::before { background: #b91c1c; }
   }
 
   /* Unread marker pill: background uses var(--c-bg) so no fallback needed;
@@ -2142,7 +2141,6 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 
   /* Unread marker line inside prefers-contrast */
   @media (prefers-contrast: more) {
-    #chat .unread-marker::before,
-    #chat .unread-marker::after { background: rgb(220 38 38 / 55%); }
+    #chat .unread-marker::before { background: rgb(220 38 38 / 55%); }
   }
 }
