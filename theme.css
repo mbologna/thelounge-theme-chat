@@ -866,10 +866,10 @@ code, kbd, pre, .irc-monospace {
    10. Unread / date markers
    ───────────────────────────────────────────────────────────────────────────── */
 #chat .unread-marker {
-  position: relative;
-  display: block;    /* override display:flex from #chat .msg */
-  padding: 0;        /* override padding:0 16px from #chat .msg */
-  text-align: center;
+  display: flex;              /* keep flex, but own it */
+  align-items: center;        /* override align-items:baseline from #chat .msg */
+  flex-wrap: nowrap;          /* override flex-wrap:wrap from #chat .msg */
+  padding: 0 16px;
   margin: 10px 0 4px;
   -webkit-user-select: none;
   user-select: none;
@@ -884,23 +884,19 @@ code, kbd, pre, .irc-monospace {
 /* Extra gap when the date badge sits directly above the NEW MESSAGES marker */
 #chat .date-marker + .unread-marker { margin-top: 24px; }
 
-.unread-marker::before {
+.unread-marker::before,
+.unread-marker::after {
   content: "";
-  position: absolute;
-  top: 50%;
-  left: 16px; right: 16px;
+  flex: 1;
   height: 1px;
   background: color-mix(in srgb, var(--c-unread) 30%, transparent);
 }
 
 .unread-marker-text {
-  position: relative;
-  z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 5px;
   white-space: nowrap;
-  background: var(--c-bg);
   border: 1px solid color-mix(in srgb, var(--c-unread) 60%, transparent);
   color: var(--c-unread);
   font-size: 10.5px;
@@ -921,10 +917,10 @@ code, kbd, pre, .irc-monospace {
 }
 
 #chat .date-marker {
-  position: relative;
-  display: block;    /* override display:flex from #chat .msg */
-  padding: 0;        /* override padding:0 16px from #chat .msg */
-  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  padding: 0 16px;
   margin: 16px 0 4px;
   -webkit-user-select: none;
   user-select: none;
@@ -936,18 +932,15 @@ code, kbd, pre, .irc-monospace {
 /* Markers are separators, not interactive rows — suppress hover highlight and pointer */
 #chat .msg.date-marker:hover { background: transparent; cursor: default; }
 
-.date-marker::before {
+.date-marker::before,
+.date-marker::after {
   content: "";
-  position: absolute;
-  top: 50%;
-  left: 16px; right: 16px;
+  flex: 1;
   height: 1px;
   background: var(--c-border);
 }
 
 .date-marker-text {
-  position: relative;
-  z-index: 1;
   display: inline-block;
   background: var(--c-elevated);
   border: 1px solid var(--c-border);
@@ -2014,7 +2007,8 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   .channel-list-item.highlight { border-left-width: 3px; }
 
   /* Unread marker line: more opaque */
-  .unread-marker::before { background: color-mix(in srgb, var(--c-unread) 55%, transparent); }
+  .unread-marker::before,
+  .unread-marker::after { background: color-mix(in srgb, var(--c-unread) 55%, transparent); }
 
   /* Range slider: thicker track and stronger thumb ring for legibility */
   input[type="range"]                             { height: 6px; }
@@ -2095,10 +2089,12 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   }
 
   /* Unread marker line: flat color instead of alpha-mixed */
-  .unread-marker::before { background: #fca5a5; }
+  .unread-marker::before,
+  .unread-marker::after { background: #fca5a5; }
 
   @media (prefers-color-scheme: dark) {
-    .unread-marker::before { background: #b91c1c; }
+    .unread-marker::before,
+    .unread-marker::after { background: #b91c1c; }
   }
 
   /* Unread marker pill: background uses var(--c-bg) so no fallback needed;
@@ -2138,6 +2134,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 
   /* Unread marker line inside prefers-contrast */
   @media (prefers-contrast: more) {
-    .unread-marker::before { background: rgb(220 38 38 / 55%); }
+    .unread-marker::before,
+    .unread-marker::after { background: rgb(220 38 38 / 55%); }
   }
 }
