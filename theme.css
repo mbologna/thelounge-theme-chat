@@ -873,9 +873,11 @@ code, kbd, pre, .irc-monospace {
 /* ── Unread marker container ──────────────────────────────────────────────── */
 #chat .unread-marker {
   position: relative;       /* anchor for ::before absolute line */
-  display: block;
+  display: flex;            /* flex so justify-content:center works on the pill */
+  justify-content: center;
+  align-items: center;
   margin: 10px 0 4px;
-  padding: 4px 0;           /* vertical breathing room so line doesn't clip pill */
+  padding: 4px 0;           /* vertical breathing room */
   -webkit-user-select: none;
   user-select: none;
 }
@@ -902,11 +904,9 @@ code, kbd, pre, .irc-monospace {
 
 /* ── Unread marker pill ───────────────────────────────────────────────────── */
 .unread-marker-text {
-  display: block;           /* block so margin:auto works */
-  width: max-content;       /* shrink to content, then auto-margins center it */
-  margin: 0 auto;
   position: relative;
-  z-index: 1;               /* above the line */
+  z-index: 1;               /* above the ::before line */
+  display: inline-block;    /* shrink to content as a flex item */
   white-space: nowrap;
   background: var(--c-bg);  /* mask the line behind the pill */
   border: 1px solid color-mix(in srgb, var(--c-unread) 60%, transparent);
@@ -922,9 +922,11 @@ code, kbd, pre, .irc-monospace {
 /* ── Date marker container ────────────────────────────────────────────────── */
 #chat .date-marker {
   position: relative;       /* anchor for ::before absolute line */
-  display: block;
+  display: flex;            /* flex so justify-content:center works on the pill */
+  justify-content: center;
+  align-items: center;
   margin: 16px 0 4px;
-  padding: 4px 0;           /* vertical breathing room so line doesn't clip pill */
+  padding: 4px 0;           /* vertical breathing room */
   -webkit-user-select: none;
   user-select: none;
 }
@@ -948,11 +950,9 @@ code, kbd, pre, .irc-monospace {
 
 /* ── Date marker pill ─────────────────────────────────────────────────────── */
 .date-marker-text {
-  display: block;           /* block so margin:auto works */
-  width: max-content;       /* shrink to content, then auto-margins center it */
-  margin: 0 auto;
   position: relative;
-  z-index: 1;               /* above the line */
+  z-index: 1;               /* above the ::before line */
+  display: inline-block;    /* shrink to content as a flex item */
   background: var(--c-elevated);
   border: 1px solid var(--c-border);
   border-radius: 9999px;
