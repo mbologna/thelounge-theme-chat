@@ -864,17 +864,16 @@ code, kbd, pre, .irc-monospace {
 
 /* ─────────────────────────────────────────────────────────────────────────────
    10. Unread / date markers
-   Strategy: mirror TheLounge's own approach — position:absolute full-width line
-   behind the pill, pill centered with text-align, pill elevated with z-index.
-   This avoids any cascade fight with the default style.css.
+   Strategy: position:absolute on BOTH the line and the pill.
+   The container gets an explicit min-height; the pill is pinned to
+   left:50%+translateX(-50%) so it's centered regardless of any parent
+   display/text-align context. The full-width rule is also absolute.
    ───────────────────────────────────────────────────────────────────────────── */
 
 /* ── Unread marker container ──────────────────────────────────────────────── */
 #chat .unread-marker {
-  position: relative;       /* anchor for ::before absolute line */
-  display: block;
-  text-align: center;
-  padding: 4px 0;
+  position: relative;       /* anchor for absolute children */
+  min-height: 22px;
   margin: 10px 0 4px;
   -webkit-user-select: none;
   user-select: none;
@@ -883,7 +882,7 @@ code, kbd, pre, .irc-monospace {
 /* Extra gap when a date badge sits directly above */
 #chat .date-marker + .unread-marker { margin-top: 24px; }
 
-/* Full-width horizontal rule (matches default approach, no cascade conflict) */
+/* Full-width horizontal rule */
 #chat .unread-marker::before {
   content: "";
   position: absolute;
@@ -902,8 +901,11 @@ code, kbd, pre, .irc-monospace {
 
 /* ── Unread marker pill ───────────────────────────────────────────────────── */
 .unread-marker-text {
-  position: relative;
-  z-index: 1;               /* float above the ::before line */
+  position: absolute;       /* pinned to exact center of container */
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;               /* above the line */
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -921,16 +923,14 @@ code, kbd, pre, .irc-monospace {
 
 /* ── Date marker container ────────────────────────────────────────────────── */
 #chat .date-marker {
-  position: relative;       /* anchor for ::before absolute line */
-  display: block;
-  text-align: center;
-  padding: 4px 0;
+  position: relative;       /* anchor for absolute children */
+  min-height: 22px;
   margin: 16px 0 4px;
   -webkit-user-select: none;
   user-select: none;
 }
 
-/* Full-width horizontal rule (matches default approach, no cascade conflict) */
+/* Full-width horizontal rule */
 #chat .date-marker::before {
   content: "";
   position: absolute;
@@ -949,8 +949,11 @@ code, kbd, pre, .irc-monospace {
 
 /* ── Date marker pill ─────────────────────────────────────────────────────── */
 .date-marker-text {
-  position: relative;
-  z-index: 1;               /* float above the ::before line */
+  position: absolute;       /* pinned to exact center of container */
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;               /* above the line */
   display: inline-block;
   background: var(--c-elevated);
   border: 1px solid var(--c-border);
@@ -959,7 +962,7 @@ code, kbd, pre, .irc-monospace {
   font-size: 11px;
   letter-spacing: 0.05em;
   padding: 1px 10px;
-  text-wrap: balance;
+  white-space: nowrap;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
