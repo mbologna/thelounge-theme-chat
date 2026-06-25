@@ -884,9 +884,13 @@ code, kbd, pre, .irc-monospace {
 /* Extra gap when the date badge sits directly above the NEW MESSAGES marker */
 #chat .date-marker + .unread-marker { margin-top: 24px; }
 
-.unread-marker::before,
-.unread-marker::after {
+/* #chat prefix raises specificity to (1,1,1) to beat the default style.css rule
+   `#chat .unread-marker:before { position: absolute; … }` which is also (1,1,1)
+   but ours appears later in the cascade, so we win. */
+#chat .unread-marker::before,
+#chat .unread-marker::after {
   content: "";
+  position: static;  /* override default's position:absolute */
   flex: 1;
   height: 1px;
   background: color-mix(in srgb, var(--c-unread) 30%, transparent);
@@ -932,9 +936,13 @@ code, kbd, pre, .irc-monospace {
 /* Markers are separators, not interactive rows — suppress hover highlight and pointer */
 #chat .msg.date-marker:hover { background: transparent; cursor: default; }
 
-.date-marker::before,
-.date-marker::after {
+/* #chat prefix raises specificity to (1,1,1) to beat the default style.css rule
+   `#chat .date-marker:before { position: absolute; … }` which is also (1,1,1)
+   but ours appears later in the cascade, so we win. */
+#chat .date-marker::before,
+#chat .date-marker::after {
   content: "";
+  position: static;  /* override default's position:absolute */
   flex: 1;
   height: 1px;
   background: var(--c-border);
@@ -2007,8 +2015,8 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   .channel-list-item.highlight { border-left-width: 3px; }
 
   /* Unread marker line: more opaque */
-  .unread-marker::before,
-  .unread-marker::after { background: color-mix(in srgb, var(--c-unread) 55%, transparent); }
+  #chat .unread-marker::before,
+  #chat .unread-marker::after { background: color-mix(in srgb, var(--c-unread) 55%, transparent); }
 
   /* Range slider: thicker track and stronger thumb ring for legibility */
   input[type="range"]                             { height: 6px; }
@@ -2089,12 +2097,12 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   }
 
   /* Unread marker line: flat color instead of alpha-mixed */
-  .unread-marker::before,
-  .unread-marker::after { background: #fca5a5; }
+  #chat .unread-marker::before,
+  #chat .unread-marker::after { background: #fca5a5; }
 
   @media (prefers-color-scheme: dark) {
-    .unread-marker::before,
-    .unread-marker::after { background: #b91c1c; }
+    #chat .unread-marker::before,
+    #chat .unread-marker::after { background: #b91c1c; }
   }
 
   /* Unread marker pill: background uses var(--c-bg) so no fallback needed;
@@ -2134,7 +2142,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 
   /* Unread marker line inside prefers-contrast */
   @media (prefers-contrast: more) {
-    .unread-marker::before,
-    .unread-marker::after { background: rgb(220 38 38 / 55%); }
+    #chat .unread-marker::before,
+    #chat .unread-marker::after { background: rgb(220 38 38 / 55%); }
   }
 }
