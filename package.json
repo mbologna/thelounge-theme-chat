@@ -34,9 +34,7 @@
     "pretest": "npm run build",
     "test": "node --test test/*.mjs",
     "check": "npm run lint && npm test",
-    "prepublishOnly": "npm run build",
-    "deploy": "npm run build && node scripts/deploy.mjs",
-    "reinstall": "npm run build && node scripts/deploy.mjs reinstall"
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "lightningcss-cli": "^1.32.0",

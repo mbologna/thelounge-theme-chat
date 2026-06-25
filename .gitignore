@@ -1,3 +1,5 @@
 node_modules/
 .DS_Store
 theme.min.css
+*.tgz
+scripts/
