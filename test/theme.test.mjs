@@ -96,6 +96,32 @@ test("package.json declares a valid TheLounge theme", () => {
   assert.ok(pkg.keywords.includes("thelounge-theme"), "missing thelounge-theme keyword");
 });
 
+test("every color-mix() use is covered by the @supports not fallback block", () => {
+  // Strip CSS comments first so commented-out examples don't skew counts.
+  const stripped = css.replace(/\/\*[\s\S]*?\*\//g, "");
+
+  // Verify the fallback block exists.
+  const supportsIdx = stripped.indexOf("@supports not (color-mix(");
+  assert.ok(supportsIdx !== -1, "missing @supports not (color-mix()) fallback block");
+
+  // Verify the fallback block body is non-empty (contains actual override rules).
+  const blockOpen = stripped.indexOf("{", supportsIdx);
+  const fallbackBody = stripped.slice(blockOpen + 1);
+  assert.ok(
+    fallbackBody.trim().length > 200,
+    "@supports not fallback block appears empty — add override rules for each color-mix() use",
+  );
+
+  // Snapshot: if this count grows, add a corresponding fallback rule and update the number.
+  const modernSection = stripped.slice(0, supportsIdx);
+  const count = (modernSection.match(/color-mix\(/g) || []).length;
+  assert.equal(
+    count,
+    17,
+    `color-mix() use count changed (was 17, now ${count}) — add a fallback rule to the @supports not block and update this snapshot`,
+  );
+});
+
 test("build output exists, is non-empty and smaller than source", () => {
   const min = join(root, "theme.min.css");
   assert.ok(existsSync(min), "theme.min.css not built — run `npm run build`");
