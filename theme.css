@@ -878,6 +878,9 @@ code, kbd, pre, .irc-monospace {
 /* Specificity guard: #chat .msg:not(.previous-source) sets margin-top:18px at (1,2,0) */
 #chat .msg.unread-marker { margin-top: 10px; }
 
+/* Markers are separators, not interactive rows — suppress hover highlight and pointer */
+#chat .msg.unread-marker:hover { background: transparent; cursor: default; }
+
 /* Extra gap when the date badge sits directly above the NEW MESSAGES marker */
 #chat .date-marker + .unread-marker { margin-top: 24px; }
 
@@ -929,6 +932,9 @@ code, kbd, pre, .irc-monospace {
 
 /* Specificity guard: #chat .msg:not(.previous-source) sets margin-top:18px at (1,2,0) */
 #chat .msg.date-marker { margin-top: 16px; }
+
+/* Markers are separators, not interactive rows — suppress hover highlight and pointer */
+#chat .msg.date-marker:hover { background: transparent; cursor: default; }
 
 .date-marker::before {
   content: "";
