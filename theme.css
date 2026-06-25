@@ -953,7 +953,7 @@ code, kbd, pre, .irc-monospace {
   position: relative;
   z-index: 1;               /* above the ::before line */
   display: inline-block;    /* shrink to content as a flex item */
-  background: var(--c-elevated);
+  background: var(--c-bg);  /* match chat background so pill masks the line cleanly */
   border: 1px solid var(--c-border);
   border-radius: 9999px;
   color: var(--c-muted);
