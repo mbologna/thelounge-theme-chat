@@ -872,9 +872,10 @@ code, kbd, pre, .irc-monospace {
 
 /* ── Unread marker container ──────────────────────────────────────────────── */
 #chat .unread-marker {
-  position: relative;       /* anchor for absolute children */
-  min-height: 22px;
+  position: relative;       /* anchor for ::before absolute line */
+  display: block;
   margin: 10px 0 4px;
+  padding: 4px 0;           /* vertical breathing room so line doesn't clip pill */
   -webkit-user-select: none;
   user-select: none;
 }
@@ -901,14 +902,11 @@ code, kbd, pre, .irc-monospace {
 
 /* ── Unread marker pill ───────────────────────────────────────────────────── */
 .unread-marker-text {
-  position: absolute;       /* pinned to exact center of container */
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  display: block;           /* block so margin:auto works */
+  width: max-content;       /* shrink to content, then auto-margins center it */
+  margin: 0 auto;
+  position: relative;
   z-index: 1;               /* above the line */
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
   white-space: nowrap;
   background: var(--c-bg);  /* mask the line behind the pill */
   border: 1px solid color-mix(in srgb, var(--c-unread) 60%, transparent);
@@ -923,9 +921,10 @@ code, kbd, pre, .irc-monospace {
 
 /* ── Date marker container ────────────────────────────────────────────────── */
 #chat .date-marker {
-  position: relative;       /* anchor for absolute children */
-  min-height: 22px;
+  position: relative;       /* anchor for ::before absolute line */
+  display: block;
   margin: 16px 0 4px;
+  padding: 4px 0;           /* vertical breathing room so line doesn't clip pill */
   -webkit-user-select: none;
   user-select: none;
 }
@@ -949,12 +948,11 @@ code, kbd, pre, .irc-monospace {
 
 /* ── Date marker pill ─────────────────────────────────────────────────────── */
 .date-marker-text {
-  position: absolute;       /* pinned to exact center of container */
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  display: block;           /* block so margin:auto works */
+  width: max-content;       /* shrink to content, then auto-margins center it */
+  margin: 0 auto;
+  position: relative;
   z-index: 1;               /* above the line */
-  display: inline-block;
   background: var(--c-elevated);
   border: 1px solid var(--c-border);
   border-radius: 9999px;
