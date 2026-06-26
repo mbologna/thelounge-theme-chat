@@ -4,7 +4,11 @@
   "description": "Warm, editorial IRC theme for TheLounge — automatic light/dark, digest-style messages, coloured avatar discs",
   "keywords": [
     "thelounge",
-    "thelounge-theme"
+    "thelounge-theme",
+    "irc",
+    "dark-mode",
+    "css-only",
+    "accessibility"
   ],
   "main": "package.json",
   "license": "MIT",
