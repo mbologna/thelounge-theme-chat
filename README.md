@@ -48,8 +48,6 @@ JavaScript.
 - **Selection & code**: tinted text selection and warm syntax-friendly inline/block `code`
   colours
 
-<!-- screenshot -->
-
 ---
 
 ## Installation
@@ -112,10 +110,9 @@ Two workarounds:
 
 ## Related
 
-Part of a small family of TheLounge add-ons by [@mbologna](https://github.com/mbologna):
+See also:
 
-- 🎨 **[thelounge-theme-chat](https://github.com/mbologna/thelounge-theme-chat)**: a warm, editorial light/dark theme (this project)
-- 🔔 **[thelounge-plugin-apprise-push](https://github.com/mbologna/thelounge-plugin-apprise-push)**: push notifications via Apprise
+- 🔔 **[thelounge-plugin-apprise-push](https://github.com/mbologna/thelounge-plugin-apprise-push)**: push notifications via Apprise (100+ services, hot-reload config, zero deps)
 
 ---
 

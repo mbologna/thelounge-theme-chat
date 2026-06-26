@@ -267,9 +267,21 @@ code, kbd, pre, .irc-monospace {
   overscroll-behavior-y: contain;
 }
 
-/* Scroll-hint: a gradient at the foot of the channel list hints at overflow.
-   Must be on .scrollable-area::after (not #sidebar::after) so it stays
-   inside the scroll container and does not overlap the #footer buttons. */
+/* Scroll-hints: gradients at the head and foot of the channel list hint at overflow.
+   Must be on .scrollable-area pseudo-elements (not #sidebar) so they stay inside the
+   scroll container and do not overlap the #footer buttons. */
+#sidebar .scrollable-area::before {
+  content: "";
+  position: sticky;
+  top: 0;
+  display: block;
+  height: 24px;
+  margin-bottom: -24px;
+  background: linear-gradient(to top, transparent, var(--c-panel));
+  pointer-events: none;
+  z-index: 1;
+}
+
 #sidebar .scrollable-area::after {
   content: "";
   position: sticky;
@@ -374,6 +386,7 @@ code, kbd, pre, .irc-monospace {
   background: var(--c-hover);
   color: var(--c-text);
 }
+.channel-list-item:active { background: var(--c-elevated); color: var(--c-text); }
 
 .channel-list-item.active:hover {
   background: color-mix(in srgb, var(--c-accent) 14%, var(--c-panel));
@@ -510,7 +523,7 @@ code, kbd, pre, .irc-monospace {
   font-weight: var(--fw-medium);
   cursor: pointer;
   box-shadow: var(--shadow-sm);
-  transition: opacity var(--t), box-shadow var(--t);
+  transition: opacity var(--t), box-shadow var(--t), transform var(--t);
   white-space: nowrap;
 }
 
@@ -520,10 +533,11 @@ code, kbd, pre, .irc-monospace {
   box-shadow: var(--shadow-md);
 }
 
-.jump-to-bottom .jump-to-bottom-btn:focus-visible,
-.jump-to-bottom button:focus-visible {
-  outline: 2px solid #fff;    /* white ring on accent background, same as .btn-primary */
-  outline-offset: 2px;
+.jump-to-bottom .jump-to-bottom-btn:active,
+.jump-to-bottom button:active {
+  opacity: 0.72;
+  transform: scale(0.96);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ── File drag-and-drop overlay ──
@@ -1111,12 +1125,13 @@ code, kbd, pre, .irc-monospace {
   font-size: 13px;
   font-weight: var(--fw-medium);
   cursor: pointer;
-  transition: opacity var(--t);
+  transition: opacity var(--t), transform var(--t);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
-#form #submit:hover { opacity: 0.82; }
+#form #submit:hover  { opacity: 0.82; }
+#form #submit:active { opacity: 0.70; transform: scale(0.97); }
 
 #form #upload {
   flex-shrink: 0;
@@ -1127,9 +1142,10 @@ code, kbd, pre, .irc-monospace {
   height: 36px;
   padding: 0 10px;
   cursor: pointer;
-  transition: color var(--t), border-color var(--t), background var(--t);
+  transition: color var(--t), border-color var(--t), background var(--t), transform var(--t);
 }
-#form #upload:hover { color: var(--c-text); border-color: var(--c-border-mid); background: var(--c-hover); }
+#form #upload:hover  { color: var(--c-text); border-color: var(--c-soft); background: var(--c-hover); }
+#form #upload:active { color: var(--c-text); border-color: var(--c-soft); background: var(--c-elevated); transform: scale(0.97); }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    13. Link previews
@@ -1399,6 +1415,15 @@ textarea {
 input::placeholder,
 textarea::placeholder { color: var(--c-muted); opacity: 1; }
 
+/* Disabled controls: dimmed + no-entry cursor */
+input:disabled,
+select:disabled,
+textarea:disabled,
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 /* Custom select arrow — strips the OS chrome and injects a themed chevron.
    The SVG is URL-encoded inline so there's no external dependency. */
 select {
@@ -1452,10 +1477,12 @@ button.btn:focus-visible,
    doesn't compete with a mid-gray label color on hover */
 .network-name:focus-visible { color: var(--c-text); }
 
-/* White outline on accent-colored (blue) buttons — accent-on-accent would be invisible */
+/* On-accent focus ring — a plain outline would vanish against the accent background */
 #form #submit:focus-visible,
-.btn-primary:focus-visible {
-  outline: 2px solid #fff;
+.btn-primary:focus-visible,
+.jump-to-bottom .jump-to-bottom-btn:focus-visible,
+.jump-to-bottom button:focus-visible {
+  outline: 2px solid var(--c-on-accent);
   outline-offset: 2px;
 }
 
@@ -1578,6 +1605,26 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   box-shadow: 0 0 0 1px var(--c-accent), 0 0 0 4px var(--c-accent-glow);
 }
 
+/* ── Progress bar ──
+   Matches the range slider's track/thumb palette.
+   accent-color on :root already handles native <progress> in most browsers;
+   these rules give full cross-browser control for upload/loading bars. */
+progress {
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  width: 100%;
+  height: 4px;
+  border: none;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: var(--c-border-mid);
+  vertical-align: middle;
+}
+progress::-webkit-progress-bar   { background: var(--c-border-mid); border-radius: 9999px; }
+progress::-webkit-progress-value { background: var(--c-accent); border-radius: 9999px; transition: width var(--t); }
+progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9999px; }
+
 .btn, button.btn {
   background: var(--c-elevated);
   border: 1px solid var(--c-border-mid);
@@ -1586,11 +1633,13 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   font-size: 13.5px;
   padding: 6px 14px;
   cursor: pointer;
-  transition: background var(--t);
+  transition: background var(--t), transform var(--t);
 }
 .btn:hover          { background: var(--c-hover); }
+.btn:active         { background: var(--c-elevated); transform: scale(0.97); }
 .btn-primary        { background: var(--c-accent); border-color: transparent; color: var(--c-on-accent); font-weight: var(--fw-medium); }
 .btn-primary:hover  { opacity: 0.85; background: var(--c-accent); }
+.btn-primary:active { opacity: 0.72; transform: scale(0.97); }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    19. Sign-in / connect / loading
@@ -1680,14 +1729,18 @@ input[type="range"]:focus-visible::-moz-range-thumb {
     color: var(--c-soft);
   }
 
-  /* Image hover effects (zoom, lightbox icon) look wrong as sticky-hover on tap */
+  /* Image hover effects (zoom) look wrong as sticky-hover on tap — neutralise */
   .msg .image-link:hover img,
   .msg .content img:hover {
     box-shadow: none;
     transform: none;
     cursor: auto;
   }
-  .msg .image-link:hover::after { opacity: 0; }
+
+  /* Show the lightbox icon faintly at all times so touch users know images are zoomable.
+     Suppress the sticky-hover state so it doesn't flicker after a tap. */
+  .msg .image-link::after        { opacity: 0.65; }
+  .msg .image-link:hover::after  { opacity: 0.65; }
 
   .channel-list-item.active:hover {
     background: color-mix(in srgb, var(--c-accent) 14%, var(--c-panel));
