@@ -124,6 +124,13 @@
   --button-color:           var(--c-accent);
   --button-text-color-hover: #fff;
   --overlay-bg-color:       rgb(0 0 0 / 40%);
+
+  /* Background of the message input form. Core's TypingIndicator component
+     reads this directly in its own embedded style block — left unset, it defaults
+     to a hardcoded white, showing as a stray white bar under the input in
+     dark mode. */
+  --form-bg-color:          var(--c-panel);
+  --upload-progressbar-color: var(--c-accent);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -351,22 +358,24 @@ code, kbd, pre, .irc-monospace {
   text-decoration: none;
 }
 
-.network-name {
-  display: block;
-  width: 100%;
-  background: none;
-  border: none;
-  text-align: left;
-  color: var(--c-muted);
-  font-size: 11px;
-  font-weight: var(--fw-bold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 14px 14px 4px;
-  cursor: pointer;
+/* ── Network / lobby row ──
+   TheLounge renders the network name as a clickable .channel-list-item with
+   data-type="lobby" (NetworkLobby.vue) — there is no separate ".network-name"
+   label element. Core hardcodes this row to a fixed green (#84ce88) at a
+   specificity ([data-type] attribute + class) that beats our generic
+   .channel-list-item rules, so it must be overridden explicitly here. */
+.channel-list-item[data-type="lobby"] {
+  color: var(--c-soft);
   transition: color var(--t);
 }
-.network-name:hover { color: var(--c-soft); }
+
+.channel-list-item[data-type="lobby"]:hover {
+  color: var(--c-text);
+}
+
+.channel-list-item[data-type="lobby"].active {
+  color: var(--c-accent);
+}
 
 .channel-list-item {
   display: flex;
@@ -407,7 +416,7 @@ code, kbd, pre, .irc-monospace {
   white-space: nowrap;
 }
 
-.channel-list-item.unread .name {
+.channel-list-item.has-unread .name {
   color: var(--c-text);
   font-weight: var(--fw-medium);
 }
@@ -428,13 +437,49 @@ code, kbd, pre, .irc-monospace {
   padding: 0 5px;
 }
 
-.channel-list-item.highlight {
+.channel-list-item.has-highlight {
   border-left-color: var(--c-unread);
 }
 
-.channel-list-item.highlight .badge {
+.channel-list-item .badge.highlight {
   background: var(--c-unread);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--c-unread) 30%, transparent);
+}
+
+/* ── Channel-row state modifiers ──
+   Real classes from ChannelWrapper.vue / NetworkLobby.vue. Core hardcodes
+   not-secure/not-connected/parted-channel to its own orange/red at a
+   specificity that wins over our generic .channel-list-item color — rebind
+   to our palette so they stay in-family instead of clashing. */
+.channel-list-item.not-secure,
+.channel-list-item.not-secure:hover,
+.channel-list-item.not-secure.active {
+  color: var(--c-away);
+}
+
+.channel-list-item.not-connected,
+.channel-list-item.parted-channel,
+.channel-list-item.not-connected:hover,
+.channel-list-item.not-connected.active,
+.channel-list-item.parted-channel:hover,
+.channel-list-item.parted-channel.active {
+  color: var(--c-danger);
+}
+
+/* ── Sidebar icon buttons: close / join / collapse ──
+   Core hardcodes these to a plain white (color: #fff on the ::before glyph),
+   which assumes a dark navy sidebar. On our light-mode panel background
+   that's a white icon on near-white — effectively invisible. */
+.channel-list-item .close::before,
+.channel-list-item[data-type="lobby"] .add-channel::before,
+#sidebar .network .collapse-network-icon::before {
+  color: var(--c-muted);
+}
+
+.channel-list-item .close:hover::before,
+.channel-list-item[data-type="lobby"] .add-channel:hover::before,
+#sidebar .collapse-network:hover .collapse-network-icon::before {
+  color: var(--c-text);
 }
 
 #footer {
@@ -453,6 +498,14 @@ code, kbd, pre, .irc-monospace {
 
 #footer .btn:hover,
 #footer button:hover { color: var(--c-text); }
+
+/* Core hardcodes an active footer button (e.g. open Settings) to white text
+   on a dark navy background — override both for the same reason as the
+   sidebar icons above. */
+#footer button.active {
+  color: var(--c-text);
+  background: var(--c-elevated);
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    6. Chat window — shell
@@ -718,11 +771,71 @@ code, kbd, pre, .irc-monospace {
   white-space: nowrap;
 }
 
+/* The common "nick: message" address form is a different case: confirmed
+   live that TheLounge renders that leading nick as a real <Username> (a
+   `.user` component, clickable/colored), not a `.content .highlight` span —
+   so the rule above never matched IRC's single most common way of mentioning
+   someone, even though the row itself correctly highlights. Give the leading
+   nick in a highlighted message's content the same chip treatment. */
+#chat .msg.highlight .content > .user:first-child {
+  background: color-mix(in srgb, var(--c-unread) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c-unread) 28%, transparent);
+  border-radius: 3px;
+  padding: 0 3px;
+  color: var(--c-unread) !important;
+  font-weight: var(--fw-semibold);
+}
+
+/* ── Reply feature (ReplyContext.vue) ──
+   A compact "↩ nick — quoted text" preview rendered above a reply message,
+   plus a hover toolbar with a reply button on every message (core already
+   lays both out structurally — only its colors are hardcoded light-only). */
+#chat .msg .reply-context-icon::before { color: var(--c-muted); }
+
+#chat .msg .reply-context:not(.disabled):hover {
+  background: var(--c-hover);
+  color: var(--c-text);
+}
+
+#chat .msg .reply-context:not(.disabled):hover .reply-context-icon::before {
+  color: var(--c-soft);
+}
+
+#chat .msg .msg-actions {
+  background: var(--c-elevated);
+  border: 1px solid var(--c-border-mid);
+  box-shadow: var(--shadow-sm);
+}
+
+#chat .msg .msg-actions button {
+  color: var(--c-soft);
+}
+
+#chat .msg .msg-actions button:hover,
+#chat .msg .msg-actions button:focus-visible {
+  background: var(--c-hover);
+  color: var(--c-text);
+}
+
+#chat .msg .msg-actions button:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: -1px;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    8. Message types
    ───────────────────────────────────────────────────────────────────────────── */
+
+/* Action (/me) messages: unlike every other type, the nick is NOT inside
+   `.from` here — `.from` holds only the "* " marker, and <Username> is the
+   first child of `.content` instead (Message.vue). Core hardcodes `.from`,
+   `.content` and any nested `.user` to its own orange (#f39c12); confirmed
+   live that our old `.from .user` selector pointed at the wrong element, so
+   the nick rendered in that hardcoded orange instead of --c-action, clashing
+   with the purple italic text around it. */
+#chat .msg[data-type="action"] .from        { color: var(--c-action); }
 #chat .msg[data-type="action"] .content     { color: var(--c-action); font-style: italic; }
-#chat .msg[data-type="action"] .from .user  { color: var(--c-action) !important; opacity: 0.8; }
+#chat .msg[data-type="action"] .user        { color: var(--c-action) !important; opacity: 0.8; }
 
 #chat .msg[data-type="notice"] .content     { color: var(--c-notice); }
 #chat .msg[data-type="notice"] .from .user  { color: var(--c-notice) !important; }
@@ -988,20 +1101,33 @@ code, kbd, pre, .irc-monospace {
   flex-direction: column;
 }
 
+/* .count holds a live search <input> (not plain text) — the "N users"
+   label is its placeholder. Core hardcodes the row to a bare #fafafa, which
+   shows as a stray light-gray bar in dark mode. */
 #chat .userlist .count {
   flex-shrink: 0;
   height: var(--header-h);
-  display: flex;
-  align-items: center;
-  padding: 0 14px;
   border-bottom: 1px solid var(--c-border);
+  background: var(--c-panel);
+}
+
+#chat .userlist .search {
+  color: var(--c-text);
+  font-size: 12.5px;
+}
+
+#chat .userlist .search::placeholder {
   color: var(--c-muted);
-  font-size: 11px;
+  opacity: 1;
   font-weight: var(--fw-bold);
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  -webkit-user-select: none;
-  user-select: none;
+}
+
+/* The search-icon glyph core draws inside .count via ::before */
+#chat .count::before {
+  color: var(--c-muted);
 }
 
 #chat .userlist .names {
@@ -1146,6 +1272,39 @@ code, kbd, pre, .irc-monospace {
 }
 #form #upload:hover  { color: var(--c-text); border-color: var(--c-soft); background: var(--c-hover); }
 #form #upload:active { color: var(--c-text); border-color: var(--c-soft); background: var(--c-elevated); transform: scale(0.97); }
+
+/* ── Reply bar ──
+   Shown above the input while composing a reply (ChatInput.vue). Core
+   hardcodes it to a light gray (#f0f0f0 bg / #e7e7e7 border) that never
+   adapts — it would show as a bright strip in dark mode. */
+#form .reply-bar {
+  background: var(--c-elevated);
+  border-bottom: 1px solid var(--c-border);
+  border-radius: var(--r) var(--r) 0 0;
+}
+
+/* ── In-channel message search (MessageSearchForm.vue) ──
+   The search toggle button in the chat header and its slide-down input.
+   Core hardcodes both to light-only colors. */
+#chat form.message-search button {
+  color: var(--c-soft);
+}
+
+#chat form.message-search button:hover {
+  color: var(--c-text);
+}
+
+form.message-search input {
+  background: var(--c-elevated);
+  color: var(--c-text);
+  border: 1px solid var(--c-border-mid);
+  border-radius: var(--r-sm);
+}
+
+form.message-search input::placeholder {
+  color: var(--c-muted);
+  opacity: 1;
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    13. Link previews
@@ -1362,6 +1521,22 @@ code {
   color: var(--c-text);
 }
 
+/* Confirm dialog (leave/clear-history/etc. prompts): core sets
+   `background: var(--body-bg-color); color: #fff;`, assuming its own default
+   dark-navy --body-bg-color. We remap --body-bg-color to our (light-in-light-
+   mode) panel color, so without this override the dialog would render white
+   text on a near-white background in light mode. */
+#confirm-dialog {
+  background: var(--c-elevated);
+  color: var(--c-text);
+  border: 1px solid var(--c-border-mid);
+  box-shadow: var(--shadow-lg);
+}
+
+#confirm-dialog .confirm-buttons {
+  background: var(--c-panel);
+}
+
 .window.popup .header {
   border-bottom: 1px solid var(--c-border);
   padding: 13px 18px;
@@ -1373,32 +1548,65 @@ code {
    ───────────────────────────────────────────────────────────────────────────── */
 .window.settings { background: var(--c-bg); color: var(--c-text); }
 
-.settings-menu {
-  background: var(--c-panel);
-  border-right: 1px solid var(--c-border);
+/* Settings nav (Navigation.vue) is a position:fixed floating <ul> of
+   <button>s, not an <a>-based flush sidebar — there's no ".settings-menu a"
+   in current markup. Give it a small card treatment on desktop; below
+   1089px core turns it into a dropdown with its own (already var()-driven,
+   already-themed) background, so leave that breakpoint untouched. */
+@media (width >= 1089px) {
+  .settings-menu {
+    background: var(--c-panel);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-lg);
+    padding: 8px;
+  }
 }
 
-.settings-menu a {
-  color: var(--c-soft);
-  display: block;
+.settings-menu button {
   padding: 8px 16px;
   border-radius: var(--r-sm);
-  margin: 2px 6px;
   font-size: 13.5px;
   transition: background var(--t), color var(--t);
 }
-.settings-menu a:hover           { background: var(--c-hover); color: var(--c-text); text-decoration: none; }
-.settings-menu a.active          { background: color-mix(in srgb, var(--c-accent) 10%, var(--c-panel)); color: var(--c-accent); font-weight: var(--fw-medium); }
+.settings-menu button:hover  { background: var(--c-hover); }
+.settings-menu button.active { background: color-mix(in srgb, var(--c-accent) 10%, var(--c-panel)); color: var(--c-accent); font-weight: var(--fw-medium); }
+
+/* ── Settings page: toggle switches & radio pills (settings.css) ──
+   These already mix in var(--button-color)/var(--body-color), which we
+   remap, so most of their coloring auto-adapts. Two spots don't: the
+   focus-visible glow is hardcoded to TheLounge's own default green
+   (rgb(132 206 136)) instead of reading the button/accent color, and the
+   checked radio-pill text is a hardcoded dark green chosen to sit on top of
+   that same default green — against our blue accent it reads as a
+   mismatched, low-contrast color combo. */
+.setting-toggle input:focus-visible + .toggle-track {
+  box-shadow: 0 0 0 3px var(--c-accent-glow);
+}
+
+.setting-radio-pill input:checked + .pill-label {
+  color: var(--c-on-accent);
+}
+
+.setting-radio-pill input:focus-visible + .pill-label {
+  box-shadow: inset 0 0 0 2px var(--c-accent-glow);
+}
 
 label { color: var(--c-soft); font-size: 13.5px; }
 
+/* .input is included explicitly: core's own generic `.input { background-color:
+   white; ... }` (every text input, select, and textarea carries this class)
+   has higher specificity than a bare `select`/`textarea` type selector and
+   was winning the background/color cascade — confirmed live: the Settings
+   "Theme" <select> rendered a plain white box in dark mode. Matching `.input`
+   directly ties its specificity and our later stylesheet wins the tie. */
 input[type="text"],
 input[type="password"],
 input[type="url"],
 input[type="email"],
 input[type="number"],
 select,
-textarea {
+textarea,
+.input {
   background: var(--c-bg);
   border: 1px solid var(--c-border-mid);
   border-radius: var(--r);
@@ -1422,6 +1630,22 @@ textarea:disabled,
 button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* Core's `.input:disabled { background-color: #ddd }` and
+   `.input:not(:disabled):hover/:focus { border-color: #84ce88 }` (its own
+   default-green accent) both out-specificity our bare type selectors above —
+   same class-beats-type gap as the background fix. Without this, any text
+   input/select/textarea flashes a green border on hover or plain mouse
+   focus (not just keyboard), and a disabled one shows a light-gray fill
+   that doesn't adapt to dark mode. */
+.input:disabled {
+  background: var(--c-elevated);
+}
+
+.input:not(:disabled):hover,
+.input:not(:disabled):focus {
+  border-color: var(--c-accent);
 }
 
 /* Custom select arrow — strips the OS chrome and injects a themed chevron.
@@ -1467,15 +1691,10 @@ button.btn:focus-visible,
 .channel-list-item:focus-visible,
 #chat .userlist .user:focus-visible,
 #chat .from .user:focus-visible,
-.network-name:focus-visible,
-.settings-menu a:focus-visible {
+.settings-menu button:focus-visible {
   outline: 2px solid var(--c-accent);
   outline-offset: 2px;
 }
-
-/* Lock network-name to full-contrast text when keyboard-focused so the ring
-   doesn't compete with a mid-gray label color on hover */
-.network-name:focus-visible { color: var(--c-text); }
 
 /* On-accent focus ring — a plain outline would vanish against the accent background */
 #form #submit:focus-visible,
@@ -1638,8 +1857,26 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
 .btn:hover          { background: var(--c-hover); }
 .btn:active         { background: var(--c-elevated); transform: scale(0.97); }
 .btn-primary        { background: var(--c-accent); border-color: transparent; color: var(--c-on-accent); font-weight: var(--fw-medium); }
-.btn-primary:hover  { opacity: 0.85; background: var(--c-accent); }
+.btn-primary:hover  { opacity: 0.85; }
 .btn-primary:active { opacity: 0.72; transform: scale(0.97); }
+
+/* Destructive confirm (e.g. "Leave channel", "Clear history") */
+.btn-danger        { background: var(--c-danger); border-color: transparent; color: var(--c-on-accent); font-weight: var(--fw-medium); }
+.btn-danger:hover  { opacity: 0.85; }
+.btn-danger:active { opacity: 0.72; transform: scale(0.97); }
+
+/* Version checker (Settings → Appearance). Core hardcodes its error/up-to-date
+   states to light pastel backgrounds with dark text (#f2dede/#a94442,
+   #dff0d8/#3c763d) — a light patch that would look out of place in dark mode. */
+#version-checker.error {
+  background: color-mix(in srgb, var(--c-danger) 15%, var(--c-elevated));
+  color: var(--c-danger);
+}
+
+#version-checker.up-to-date {
+  background: color-mix(in srgb, var(--c-online) 15%, var(--c-elevated));
+  color: var(--c-online);
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    19. Sign-in / connect / loading
@@ -1657,6 +1894,14 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
   box-shadow: var(--shadow-card);
   padding: 32px 28px;
   max-width: 420px;
+}
+
+/* SASL-external cert info box (NetworkForm.vue). Hardcoded to a light pastel
+   blue "info" pastel (#d9edf7/#31708f) — same light-patch-in-dark-mode bug
+   as the version-checker banner above. */
+#connect .connect-sasl-external {
+  background: color-mix(in srgb, var(--c-notice) 15%, var(--c-elevated));
+  color: var(--c-notice);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1756,33 +2001,25 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
 
 /* ─────────────────────────────────────────────────────────────────────────────
    22. Status indicators
-   --c-online / --c-away / --c-offline tokens are consumed here for the first time.
-   TheLounge renders a .status dot on the lobby/server row and .away on userlist users.
+   TheLounge renders online/away/offline state via a shared <StatusIcon>
+   component (status-icon.vue): a small box containing a span whose class
+   is status-online / status-away / status-offline, which gets its colored
+   dot from a ::after pseudo-element. It appears in two places — the sidebar
+   query (DM) row, and next to a nick in the userlist when "show status
+   indicators" is enabled in settings.
    ───────────────────────────────────────────────────────────────────────────── */
+.status-icon > .status-online::after  { background-color: var(--c-online); }
+.status-icon > .status-away::after    { background-color: var(--c-away); }
+.status-icon > .status-offline::after { background-color: var(--c-offline); }
 
-/* Away users in the userlist: dimmed so online users read first visually */
-#chat .userlist .user.away {
-  opacity: 0.45;
+/* Progressive: dim a userlist entry once we know they're away, without
+   needing JS to toggle a class on the row itself. Silently ignored in
+   browsers without :has() support — the status dot alone still communicates it. */
+@supports selector(:has(a, b)) {
+  #chat .userlist .user:has(.status-away) {
+    opacity: 0.55;
+  }
 }
-
-/* Connection status dot on the lobby/network row in the sidebar.
-   TheLounge places a small .status span inside the lobby channel-list-item. */
-.channel-list-item .status {
-  flex-shrink: 0;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  margin-right: 6px;
-  background: var(--c-offline);
-  transition: background var(--t);
-  -webkit-user-select: none;
-  user-select: none; /* decorative dot — prevent accidental text selection */
-}
-
-.channel-list-item.connected .status     { background: var(--c-online); }
-
-.channel-list-item.away-from-channel .status,
-.channel-list-item.away .status          { background: var(--c-away); }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    23. Animations
@@ -1804,7 +2041,7 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
 
 /* Only animate when the user has not requested reduced motion */
 @media (prefers-reduced-motion: no-preference) {
-  .channel-list-item.highlight .badge {
+  .channel-list-item .badge.highlight {
     animation: mention-pulse 3s ease-in-out 3;
   }
 
@@ -1898,7 +2135,6 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
   /* But not for nick buttons, nav links, or topic links where the URL is noise */
   #chat .from .user::after,
   #chat .header .topic a::after,
-  .settings-menu a::after,
   #footer a::after { content: none; }
 
   /* Avoid splitting a message across a page break */
@@ -1920,7 +2156,7 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
   }
 
   /* Mention badge: must stay visually distinct — opt out of forced-colors */
-  .channel-list-item.highlight .badge {
+  .channel-list-item .badge.highlight {
     forced-color-adjust: none;
     background: Highlight;
     color: HighlightText;
@@ -1952,7 +2188,6 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
     color: HighlightText;
     border-color: Highlight;
   }
-  .unread-marker-text::before { background: HighlightText; }
 
   /* Submit button must stay clearly distinguishable from ghost buttons */
   #form #submit {
@@ -1965,12 +2200,13 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
   #chat .toggle-content { border-left-color: Highlight; }
 
   /* Status dots */
-  .channel-list-item .status          { forced-color-adjust: none; background: ButtonText; }
-  .channel-list-item.connected .status { background: LinkText; }
+  .status-icon > .status-offline::after { forced-color-adjust: none; background: ButtonText; }
+  .status-icon > .status-online::after  { forced-color-adjust: none; background: LinkText; }
 
-  /* Sidebar scroll-shadow gradient: forced-colors overrides custom properties,
+  /* Sidebar scroll-shadow gradients: forced-colors overrides custom properties,
      turning the fade into a solid block. Opt out so it renders as intended. */
-  #sidebar::after { forced-color-adjust: none; }
+  #sidebar .scrollable-area::before,
+  #sidebar .scrollable-area::after { forced-color-adjust: none; }
 
   /* Scroll-to-bottom FAB: keep accent pill readable against forced canvas */
   .jump-to-bottom .jump-to-bottom-btn,
@@ -2068,7 +2304,7 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
 
   /* Sidebar channel item left-border: wider signal for active / unread */
   .channel-list-item.active   { border-left-width: 3px; }
-  .channel-list-item.highlight { border-left-width: 3px; }
+  .channel-list-item.has-highlight { border-left-width: 3px; }
 
   /* Unread marker line: more opaque */
   #chat .unread-marker::before { background: color-mix(in srgb, var(--c-unread) 55%, transparent); }
@@ -2118,8 +2354,15 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
    declarations are silently dropped — borders vanish, self-message tint
    disappears, the mention chip has no background. This @supports block provides
    flat-color equivalents that preserve structure without exact alpha matching.
-   ───────────────────────────────────────────────────────────────────────────── */
-@supports not (color-mix(in srgb, red 50%, blue)) {
+
+   The condition below MUST include the `color:` property — `@supports not
+   (color-mix(...))` (bare value, no property) is not valid feature-query
+   grammar, and `CSS.supports()` resolves an unparseable condition inside
+   `not (...)` to true. Confirmed live: with the bare form this whole block
+   was active in a fully current Chromium that supports color-mix() natively,
+   silently overriding every one of the real color-mix() declarations above
+   with its flatter approximations, in every modern browser, the entire time. */
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
   /* Active channel: approximate accent tint as a faint solid */
   .channel-list-item.active       { background: #dbeafe; }   /* blue-100 */
   .channel-list-item.active:hover { background: #bfdbfe; }   /* blue-200 */
@@ -2139,13 +2382,15 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
   }
 
   /* Inline mention chip: flat light red */
-  #chat .content .highlight {
+  #chat .content .highlight,
+  #chat .msg.highlight .content > .user:first-child {
     background: #fee2e2;                                      /* red-100 */
     border-color: #fca5a5;
   }
 
   @media (prefers-color-scheme: dark) {
-    #chat .content .highlight {
+    #chat .content .highlight,
+    #chat .msg.highlight .content > .user:first-child {
       background: #450a0a;
       border-color: #b91c1c;
     }
@@ -2164,11 +2409,11 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
     border-color: rgb(220 38 38 / 60%);
   }
 
-  /* Settings sidebar active link */
-  .settings-menu a.active { background: #eff6ff; }
+  /* Settings nav active tab */
+  .settings-menu button.active { background: #eff6ff; }
 
   @media (prefers-color-scheme: dark) {
-    .settings-menu a.active { background: #1e3a5f; }
+    .settings-menu button.active { background: #1e3a5f; }
   }
 
   /* text selection highlight */
@@ -2179,7 +2424,7 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
   }
 
   /* Highlight badge ring */
-  .channel-list-item.highlight .badge { box-shadow: 0 0 0 2px rgb(220 38 38 / 30%); }
+  .channel-list-item .badge.highlight { box-shadow: 0 0 0 2px rgb(220 38 38 / 30%); }
 
   /* File-drop overlay tint */
   #windows.drop-target::before { background: rgb(37 99 235 / 10%); }
@@ -2196,5 +2441,21 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
   /* Unread marker line inside prefers-contrast */
   @media (prefers-contrast: more) {
     #chat .unread-marker::before { background: rgb(220 38 38 / 55%); }
+  }
+
+  /* Version checker: flat tint instead of alpha-mixed */
+  #version-checker.error       { background: #fecaca; }
+  #version-checker.up-to-date  { background: #bbf7d0; }
+
+  @media (prefers-color-scheme: dark) {
+    #version-checker.error      { background: #450a0a; }
+    #version-checker.up-to-date { background: #052e16; }
+  }
+
+  /* SASL-external info box: flat tint instead of alpha-mixed */
+  #connect .connect-sasl-external { background: #dbeafe; }
+
+  @media (prefers-color-scheme: dark) {
+    #connect .connect-sasl-external { background: #1e3a8a; }
   }
 }

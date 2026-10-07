@@ -100,9 +100,19 @@ test("every color-mix() use is covered by the @supports not fallback block", () 
   // Strip CSS comments first so commented-out examples don't skew counts.
   const stripped = css.replace(/\/\*[\s\S]*?\*\//g, "");
 
-  // Verify the fallback block exists.
-  const supportsIdx = stripped.indexOf("@supports not (color-mix(");
-  assert.ok(supportsIdx !== -1, "missing @supports not (color-mix()) fallback block");
+  // Verify the fallback block exists, and that its condition includes the
+  // `color:` property. A bare `@supports not (color-mix(...))` (no property)
+  // is invalid feature-query grammar and evaluates to true unconditionally —
+  // i.e. the "legacy fallback" block would silently win in every modern
+  // browser instead of only in ones that actually lack color-mix() support.
+  assert.doesNotMatch(
+    stripped,
+    /@supports\s+not\s+\(\s*color-mix\(/,
+    "malformed @supports condition: bare `(color-mix(...))` has no `property:` " +
+      "prefix, so `not (...)` evaluates to true even where color-mix() is supported",
+  );
+  const supportsIdx = stripped.indexOf("@supports not (color: color-mix(");
+  assert.ok(supportsIdx !== -1, "missing @supports not (color: color-mix()) fallback block");
 
   // Verify the fallback block body is non-empty (contains actual override rules).
   const blockOpen = stripped.indexOf("{", supportsIdx);
@@ -117,8 +127,8 @@ test("every color-mix() use is covered by the @supports not fallback block", () 
   const count = (modernSection.match(/color-mix\(/g) || []).length;
   assert.equal(
     count,
-    17,
-    `color-mix() use count changed (was 17, now ${count}) — add a fallback rule to the @supports not block and update this snapshot`,
+    22,
+    `color-mix() use count changed (was 22, now ${count}) — add a fallback rule to the @supports not block and update this snapshot`,
   );
 });
 
