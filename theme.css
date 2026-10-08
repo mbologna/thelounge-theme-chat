@@ -631,7 +631,12 @@ code, kbd, pre, .irc-monospace {
   border-left: none;
 }
 #chat .msg:not(.previous-source) { margin-top: 18px; }
-#chat .msg.previous-source        { margin-top: 0; } /* explicit: overrides any TheLounge default margin on consecutive messages */
+
+/* A little breathing room between grouped lines from the same sender — fully
+   zero gap (TheLounge's default for consecutive messages) reads as run-on
+   under any real volume; this keeps the "one header" grouping language
+   while giving each line room to be scanned on its own. */
+#chat .msg.previous-source        { margin-top: 3px; }
 #chat .msg:hover                  { background: var(--c-hover); }
 #chat .msg.previous-source:hover .time { opacity: 1; }
 
@@ -878,6 +883,27 @@ code, kbd, pre, .irc-monospace {
 ) .content { color: var(--c-muted); font-size: 12.5px; }
 
 #chat .msg[data-type="error"] .content { color: var(--c-danger); }
+
+/* Status events you triggered yourself (changing the topic, setting a mode,
+   kicking someone, …) come back from the server tagged .self same as a
+   chat message — confirmed live: /topic and /mode sent by the viewer picked
+   up the self left-border + accent background meant for messages they
+   typed, which reads as noise on what's really a muted system line. These
+   types are already singled out above as "not really a message" (no
+   avatar, no margin, muted text) — self shouldn't re-add emphasis here.
+   Border stays transparent rather than `none` so the 16px/12px (mobile)
+   text inset .msg.self relies on doesn't shift. */
+#chat .msg.self:is(
+  [data-type="join"],        [data-type="part"],    [data-type="quit"],
+  [data-type="kick"],        [data-type="mode"],    [data-type="nick"],
+  [data-type="topic"],       [data-type="whois"],   [data-type="ctcp"],
+  [data-type="plugin"],      [data-type="raw"],     [data-type="motd"],
+  [data-type="banlist"],     [data-type="ignorelist"],
+  [data-type="channellist"], [data-type="condensed"]
+) {
+  border-left-color: transparent;
+  background: none;
+}
 
 /* ── Condensed status messages (collapsed joins/parts/quits) ──
    TheLounge groups consecutive status events into one expandable summary row.
