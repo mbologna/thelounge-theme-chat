@@ -1119,12 +1119,23 @@ code, kbd, pre, .irc-monospace {
 /* ─────────────────────────────────────────────────────────────────────────────
    11. User list
    ───────────────────────────────────────────────────────────────────────────── */
+
+/* Core hides the userlist by default (display: none) and only shows it via
+   #viewport.userlist-open #chat .userlist { display: flex; } — the "people"
+   header button toggles that class. Our old unconditional `display: flex`
+   here matched core's base selector at equal specificity and, loaded later,
+   always won — the panel was permanently visible and the toggle button did
+   nothing. Scope display to the same toggle core uses instead of setting it
+   unconditionally. */
 #chat .userlist {
   background: var(--c-panel);
   border-left: 1px solid var(--c-border);
   width: 180px;
-  display: flex;
   flex-direction: column;
+}
+
+#viewport.userlist-open #chat .userlist {
+  display: flex;
 }
 
 /* .count holds a live search <input> (not plain text) — the "N users"
