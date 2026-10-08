@@ -23,7 +23,7 @@ JavaScript.
 
 ## Features
 
-- **Automatic light/dark mode** via `prefers-color-scheme`, no manual toggle needed
+- **Automatic light/dark mode**: via `prefers-color-scheme`, no manual toggle needed
 - **Digest-style messages**: nick · timestamp as a header line, content below; consecutive
   messages from the same sender collapse the header
 - **Hover timestamps**: grouped messages show the timestamp on hover (top-right,
@@ -87,8 +87,8 @@ npm pack   # produces thelounge-theme-chat-<version>.tgz
 thelounge install ./thelounge-theme-chat-<version>.tgz
 ```
 
-**Yarn cache trap — same version, changed files:** yarn caches packages by content hash. If
-you repack the same version number, the new tgz gets a different hash but yarn finds a stale
+**Yarn cache trap (same version, changed files):** yarn caches packages by content hash. If
+you repack the same version number, the new tgz gets a different hash, but yarn finds a stale
 cache entry from the previous install and silently skips extraction, serving the old CSS.
 
 Two workarounds:
