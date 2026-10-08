@@ -118,4 +118,4 @@ See also:
 
 ## License
 
-[MIT](LICENSE) © Michele Bologna
+[MIT](LICENSE) © Michele Bologna<!-- branch protection verification Thu  8 Oct 2026 12:58:26 UTC -->
