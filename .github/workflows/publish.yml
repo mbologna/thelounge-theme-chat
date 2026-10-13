@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   publish:
-    uses: mbologna/.github/.github/workflows/npm-publish.yml@ac1cd53e504462ed888c4101ce47813f093201df # main
+    uses: mbologna/.github/.github/workflows/npm-publish.yml@202fc2c45a55c5d7239fb30b86cc394ac34e43ce # main
     with:
       node_version: lts/*
       package_manager: npm
