@@ -16,6 +16,7 @@ JavaScript.
 - [Features](#features)
 - [Installation](#installation)
 - [Development](#development)
+- [Versioning](#versioning)
 - [Related](#related)
 - [License](#license)
 
@@ -93,8 +94,11 @@ cache entry from the previous install and silently skips extraction, serving the
 
 Two workarounds:
 
-1. **Bump the patch version** before repacking (`1.3.0` → `1.3.1`). Yarn's cache key
-   includes the version, so a new version always forces a fresh extract.
+1. **Repack under a throwaway local version**: `npm version prerelease --preid=local
+   --no-git-tag-version` (`1.3.22` → `1.3.23-local.0`), then `npm pack`. Yarn's cache key
+   includes the version, so a new version always forces a fresh extract. Undo it after
+   testing (`git checkout -- package.json package-lock.json`) and never commit it: releases,
+   and the version they publish, come only from auto-release ([Versioning](#versioning)).
 
 2. **Clear the cache manually** before reinstalling (no version bump needed):
 
@@ -105,6 +109,18 @@ Two workarounds:
    rm -f /path/to/thelounge/packages/yarn.lock
    thelounge install ./thelounge-theme-chat-<version>.tgz
    ```
+
+---
+
+## Versioning
+
+Releases follow SemVer: [auto-release](https://github.com/mbologna/auto-release) tags
+`vX.Y.Z` from the Conventional Commit types on `main` (`feat` minor; `fix`, `perf`,
+`revert` patch; a breaking change major) on Monday's scheduled CI run, or a manual run,
+and each tag publishes the package to npm: `publish.yml` sets the version from the tag
+(`npm version`). `version` in `package.json` is kept at the latest release by hand; the tag
+decides what is published. See the
+[versioning standard](https://github.com/mbologna/.github/blob/main/VERSIONING.md).
 
 ---
 
