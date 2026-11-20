@@ -25,7 +25,8 @@
     "css": "theme.min.css",
     "name": "Chat",
     "type": "theme",
-    "themeColor": "#0e0e12"
+    "themeColor": "#0e0e12",
+    "supports": ">=4.0.0"
   },
   "files": [
     "theme.css",
