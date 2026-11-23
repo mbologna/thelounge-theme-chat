@@ -16,6 +16,7 @@ JavaScript.
 - [Features](#features)
 - [Installation](#installation)
 - [Development](#development)
+- [Why not an existing tool](#why-not-an-existing-tool)
 - [Versioning](#versioning)
 - [Related](#related)
 - [License](#license)
@@ -109,6 +110,13 @@ Two workarounds:
    rm -f /path/to/thelounge/packages/yarn.lock
    thelounge install ./thelounge-theme-chat-<version>.tgz
    ```
+
+---
+
+## Why not an existing tool
+
+TheLounge bundles only its Default and Morning themes. This is a theme with its own look,
+so there is nothing to replace it with. Checked 2026-11-23.
 
 ---
 
