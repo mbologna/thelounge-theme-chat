@@ -333,3 +333,24 @@ for (const [scheme, base, more] of [
     assert.deepEqual(weaker, [], weaker.join("\n"));
   });
 }
+
+const ircColours = (indent) =>
+  [...code.matchAll(new RegExp(`^${indent}#chat \\.content \\.irc-fg(\\d+):not\\(\\[class\\*="irc-bg"\\]\\)\\s*\\{\\s*color:\\s*(#[0-9a-f]{3,6})`, "gim"))]
+    .map((m) => [+m[1], parseColor(m[2])]);
+
+for (const [scheme, t, colours] of [
+  ["light", lightTokens, ircColours("")],
+  ["dark", darkTokens, ircColours(" +")],
+]) {
+  test(`${scheme} mode: the 16 mIRC colours are readable on message surfaces`, () => {
+    assert.deepEqual(colours.map(([n]) => n), [...Array(16).keys()], "expected .irc-fg0 to .irc-fg15");
+    const failing = [];
+    for (const [n, colour] of colours) {
+      for (const [name, surface] of Object.entries(messageSurfaces(t))) {
+        const ratio = contrast(colour, surface);
+        if (ratio < 4.5) failing.push(`irc-fg${n} on ${name}: ${ratio.toFixed(2)}`);
+      }
+    }
+    assert.deepEqual(failing, [], failing.join("\n"));
+  });
+}

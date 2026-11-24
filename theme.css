@@ -2379,25 +2379,48 @@ kbd {
 
 /* ─────────────────────────────────────────────────────────────────────────────
    27. IRC color legibility
-   mIRC color classes (.irc-fg-N / .irc-bg-N) carry hardcoded hues from a
-   1990s palette — some are invisible on this theme's backgrounds. The fixes
-   below remap only the problem cases; all others are left as-is.
+   Core paints the 16 classic mIRC colours (.irc-fg0 to .irc-fg15) with fixed
+   values, several near-invisible on these backgrounds (yellow 1.3:1 and
+   white 1.1:1 in light mode, navy 1.1:1 in dark mode). Each is moved toward
+   black (light mode) or white (dark mode), keeping its hue, until it reaches
+   4.5:1 on every message surface; white, silver and grey keep their order.
+   Text with an explicit mIRC background is left as sent: the sender chose
+   that pair. The extended colours 16 to 98 are left as core draws them.
    ───────────────────────────────────────────────────────────────────────────── */
-
-/* Light mode: white foreground (color 0) is invisible on the warm off-white bg */
-#chat .content .irc-fg-0 { color: var(--c-soft); }
+#chat .content .irc-fg0:not([class*="irc-bg"])   { color: #636363; } /* white */
+#chat .content .irc-fg1:not([class*="irc-bg"])   { color: #000; } /* black */
+#chat .content .irc-fg2:not([class*="irc-bg"])   { color: #001f3f; } /* navy */
+#chat .content .irc-fg3:not([class*="irc-bg"])   { color: #1a7224; } /* green */
+#chat .content .irc-fg4:not([class*="irc-bg"])   { color: #ba2f27; } /* red */
+#chat .content .irc-fg5:not([class*="irc-bg"])   { color: #85144b; } /* maroon */
+#chat .content .irc-fg6:not([class*="irc-bg"])   { color: #aa0cc1; } /* purple */
+#chat .content .irc-fg7:not([class*="irc-bg"])   { color: #995010; } /* orange */
+#chat .content .irc-fg8:not([class*="irc-bg"])   { color: #736300; } /* yellow */
+#chat .content .irc-fg9:not([class*="irc-bg"])   { color: #007332; } /* lime */
+#chat .content .irc-fg10:not([class*="irc-bg"])  { color: #1f6e6e; } /* teal */
+#chat .content .irc-fg11:not([class*="irc-bg"])  { color: #3d697a; } /* cyan */
+#chat .content .irc-fg12:not([class*="irc-bg"])  { color: #0064bb; } /* blue */
+#chat .content .irc-fg13:not([class*="irc-bg"])  { color: #b90e92; } /* pink */
+#chat .content .irc-fg14:not([class*="irc-bg"])  { color: #474747; } /* grey */
+#chat .content .irc-fg15:not([class*="irc-bg"])  { color: #575757; } /* silver */
 
 @media (prefers-color-scheme: dark) {
-  /* Dark mode: black (1), navy (2), dark green (3), maroon (5), and dark purple (6)
-     all disappear on the warm dark background — remap to legible equivalents */
-  #chat .content .irc-fg-1 { color: var(--c-text);  } /* black       → primary text  */
-  #chat .content .irc-fg-2 { color: #818cf8;         } /* navy        → indigo-400    */
-  #chat .content .irc-fg-3 { color: #4ade80;         } /* dark green  → green-400     */
-  #chat .content .irc-fg-5 { color: #f87171;         } /* maroon      → red-400       */
-  #chat .content .irc-fg-6 { color: #c084fc;         } /* purple      → purple-400    */
-
-  /* Dark backgrounds that would make text invisible */
-  #chat .content .irc-bg-1 { background-color: var(--c-elevated); } /* black bg */
+  #chat .content .irc-fg0:not([class*="irc-bg"])   { color: #fff; } /* white */
+  #chat .content .irc-fg1:not([class*="irc-bg"])   { color: #969696; } /* black */
+  #chat .content .irc-fg2:not([class*="irc-bg"])   { color: #8a98a7; } /* navy */
+  #chat .content .irc-fg3:not([class*="irc-bg"])   { color: #2ecc40; } /* green */
+  #chat .content .irc-fg4:not([class*="irc-bg"])   { color: #ff6158; } /* red */
+  #chat .content .irc-fg5:not([class*="irc-bg"])   { color: #c085a1; } /* maroon */
+  #chat .content .irc-fg6:not([class*="irc-bg"])   { color: #d170df; } /* purple */
+  #chat .content .irc-fg7:not([class*="irc-bg"])   { color: #ff851b; } /* orange */
+  #chat .content .irc-fg8:not([class*="irc-bg"])   { color: #ffdc00; } /* yellow */
+  #chat .content .irc-fg9:not([class*="irc-bg"])   { color: #01ff70; } /* lime */
+  #chat .content .irc-fg10:not([class*="irc-bg"])  { color: #39cccc; } /* teal */
+  #chat .content .irc-fg11:not([class*="irc-bg"])  { color: #7fdbff; } /* cyan */
+  #chat .content .irc-fg12:not([class*="irc-bg"])  { color: #4a9ce4; } /* blue */
+  #chat .content .irc-fg13:not([class*="irc-bg"])  { color: #f457d1; } /* pink */
+  #chat .content .irc-fg14:not([class*="irc-bg"])  { color: #aaa; } /* grey */
+  #chat .content .irc-fg15:not([class*="irc-bg"])  { color: #ddd; } /* silver */
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
