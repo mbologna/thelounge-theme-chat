@@ -82,6 +82,12 @@ test("every referenced custom property is defined", () => {
   assert.deepEqual(missing, [], `undefined custom properties: ${missing}`);
 });
 
+test("the mention badge sets its text colour (core's beats the plain badge's)", () => {
+  const rule = code.match(/\.channel-list-item \.badge\.highlight\s*\{([^}]*)\}/);
+  assert.ok(rule, "missing .channel-list-item .badge.highlight rule");
+  assert.match(rule[1], /(^|[;\s])color:\s*var\(--c-on-accent\)/);
+});
+
 test("package.json declares a valid TheLounge theme", () => {
   const t = pkg.thelounge;
   assert.ok(t, "missing thelounge field");
@@ -143,3 +149,139 @@ test("build output exists, is non-empty and smaller than source", () => {
     `minified (${minSize}) should be smaller than source (${srcSize})`,
   );
 });
+
+// ── Contrast (WCAG 2.x) ──────────────────────────────────────────────────────
+
+/** The body of the `{…}` block that opens at or after `from`. */
+function blockAt(text, from) {
+  const open = text.indexOf("{", from);
+  let depth = 0;
+  for (let i = open; i < text.length; i++) {
+    if (text[i] === "{") depth++;
+    else if (text[i] === "}" && --depth === 0) return text.slice(open + 1, i);
+  }
+  throw new Error(`unclosed block at ${from}`);
+}
+
+/** { name: value } of the custom properties declared directly in a block. */
+function tokens(body) {
+  return Object.fromEntries(
+    [...body.matchAll(/--([a-z0-9-]+)\s*:\s*([^;]+);/gi)].map((m) => [m[1], m[2].trim()]),
+  );
+}
+
+/** [r, g, b, alpha] from #rgb, #rrggbb or rgb(r g b / a%). */
+function parseColor(value) {
+  let m = value.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+  if (m) {
+    const hex = m[1].length === 3 ? [...m[1]].map((c) => c + c).join("") : m[1];
+    return [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16)).concat(1);
+  }
+  m = value.match(/^rgb\(\s*(\d+)\s+(\d+)\s+(\d+)\s*\/\s*([\d.]+)%\s*\)$/);
+  if (m) return [+m[1], +m[2], +m[3], +m[4] / 100];
+  throw new Error(`unsupported colour: ${value}`);
+}
+
+/** `top` at fraction `p` over the opaque `base`, as color-mix() or alpha does. */
+function over(top, base, p = top[3]) {
+  return [0, 1, 2].map((i) => top[i] * p + base[i] * (1 - p)).concat(1);
+}
+
+function luminance([r, g, b]) {
+  const lin = (c) => ((c /= 255) <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+}
+
+function contrast(a, b) {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+const lightTokens = tokens(blockAt(code, code.search(/^:root\s*\{/m)));
+const darkStart = code.search(/@media\s*\(prefers-color-scheme:\s*dark\)\s*\{\s*:root\s*\{/);
+const darkTokens = {
+  ...lightTokens,
+  ...tokens(blockAt(code, code.indexOf(":root", darkStart))),
+};
+
+const nickColours = (indent) =>
+  [...code.matchAll(new RegExp(`^${indent}\\.user\\.color-(\\d+)\\s*\\{\\s*color:\\s*(#[0-9a-f]{6})`, "gim"))]
+    .map((m) => [+m[1], parseColor(m[2])]);
+
+/** Every background a message, a nick or secondary text is drawn on. */
+function messageSurfaces(t) {
+  const c = (name) => parseColor(t[`c-${name}`]);
+  return {
+    bg: c("bg"),
+    panel: c("panel"),
+    elevated: c("elevated"),
+    hover: c("hover"),
+    // Own messages: color-mix(accent 8%, transparent), 12% on hover
+    "own message": over(c("accent"), c("bg"), 0.08),
+    "own message hover": over(c("accent"), c("bg"), 0.12),
+    "highlighted row": over(parseColor(t["c-hl-bg"]), c("bg")),
+    "highlighted row hover": over(parseColor(t["c-hl-bg-hover"]), c("bg")),
+  };
+}
+
+for (const [scheme, t, nicks] of [
+  ["light", lightTokens, nickColours("")],
+  ["dark", darkTokens, nickColours(" +")],
+]) {
+  test(`${scheme} mode: text and fills meet WCAG AA`, () => {
+    const c = (name) => parseColor(t[`c-${name}`]);
+    const surfaces = messageSurfaces(t);
+    const highlightRow = surfaces["highlighted row"];
+    // [label, foreground, background, minimum ratio]
+    const pairs = [];
+    for (const text of ["text", "soft", "muted", "accent"]) {
+      for (const [name, surface] of Object.entries(surfaces)) {
+        pairs.push([`${text} on ${name}`, c(text), surface, 4.5]);
+      }
+    }
+    for (const fill of ["accent", "accent-strong", "unread", "unread-muted", "danger", "danger-strong"]) {
+      pairs.push([`on-accent on ${fill}`, c("on-accent"), c(fill), 4.5]);
+    }
+    for (const text of ["notice", "action"]) {
+      for (const name of ["bg", "own message", "highlighted row"]) {
+        pairs.push([`${text} on ${name}`, c(text), surfaces[name], 4.5]);
+      }
+    }
+    pairs.push(
+      // Active channel row and its hover: color-mix(accent 10%/14%, panel)
+      ["accent on active channel", c("accent"), over(c("accent"), c("panel"), 0.1), 4.5],
+      ["accent on active hover", c("accent"), over(c("accent"), c("panel"), 0.14), 4.5],
+      // Mention chip: color-mix(unread 14%) over a highlighted row
+      ["unread on mention chip", c("unread"), over(c("unread"), highlightRow, 0.14), 4.5],
+      ["unread on bg (unread marker)", c("unread"), c("bg"), 4.5],
+      ["text on highlighted row", c("text"), highlightRow, 4.5],
+      ["soft on own message", c("soft"), over(c("accent"), c("bg"), 0.12), 4.5],
+      ["warn on panel (not-secure)", c("warn"), c("panel"), 4.5],
+      ["danger on panel (not-connected)", c("danger"), c("panel"), 4.5],
+      ["success on bg", c("success"), c("bg"), 4.5],
+      ["code on elevated", c("code"), c("elevated"), 4.5],
+      // Non-text: status dots and badges against the sidebar (WCAG 1.4.11)
+      ["online dot on panel", c("online"), c("panel"), 3],
+      ["away dot on panel", c("away"), c("panel"), 3],
+      ["unread badge on panel", c("unread"), c("panel"), 3],
+      ["unread-muted badge on panel", c("unread-muted"), c("panel"), 3],
+    );
+    const failing = pairs
+      .map(([label, fg, bg, min]) => [label, contrast(fg, bg), min])
+      .filter(([, ratio, min]) => ratio < min)
+      .map(([label, ratio, min]) => `${label}: ${ratio.toFixed(2)} < ${min}`);
+    assert.deepEqual(failing, [], `contrast below WCAG AA:\n${failing.join("\n")}`);
+  });
+
+  test(`${scheme} mode: every nick colour is readable wherever nicks appear`, () => {
+    assert.equal(nicks.length, 32, `expected 32 ${scheme} nick colours, found ${nicks.length}`);
+    const failing = [];
+    for (const [n, colour] of nicks) {
+      for (const [name, surface] of Object.entries(messageSurfaces(t))) {
+        const ratio = contrast(colour, surface);
+        if (ratio < 4.5) failing.push(`color-${n} on ${name}: ${ratio.toFixed(2)}`);
+      }
+    }
+    assert.deepEqual(failing, [], `nick colours below 4.5:1:\n${failing.join("\n")}`);
+  });
+}
