@@ -2238,7 +2238,6 @@ kbd {
   #form,
   .unread-marker,
   .jump-to-bottom,
-  .notification,
   #chat .header button,
   #chat .toggle-button { display: none !important; }
 
@@ -2353,9 +2352,6 @@ kbd {
 
   /* Range thumb: must stay visually distinct from the track */
   input[type="range"] { forced-color-adjust: none; }
-
-  /* Notification toast: left border carries semantic meaning (unread alert) */
-  .notification { border-left-color: Highlight; }
 
   /* Custom checkbox/radio: appearance:none stripped the OS control — under
      forced-colors the background-image SVG is overridden, making the
@@ -2477,38 +2473,7 @@ kbd {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   29. In-app notifications
-   TheLounge surfaces mention alerts via .notification elements when the window
-   is not focused. Style them as a small accent-tinted toast so they read
-   clearly without fighting the message content behind them.
-   ───────────────────────────────────────────────────────────────────────────── */
-.notification {
-  background: var(--c-elevated);
-  border: 1px solid var(--c-border-mid);
-  border-left: 3px solid var(--c-unread);
-  border-radius: var(--r);
-  box-shadow: var(--shadow-md);
-  color: var(--c-text);
-  font-size: 13px;
-  padding: 10px 14px;
-  max-width: 320px;
-}
-
-.notification .title {
-  font-weight: var(--fw-semibold);
-  color: var(--c-unread);
-  margin-bottom: 2px;
-  text-wrap: balance;
-}
-
-.notification .body {
-  color: var(--c-soft);
-  font-size: 12.5px;
-  line-height: var(--lh-tight);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   30. color-mix() fallbacks for older browsers
+   29. color-mix() fallbacks for older browsers
    Chrome <111, Firefox <113, Safari <16.2 don't support color-mix(). The theme
    uses it in ~15 places for alpha-composited tints. Without a fallback those
    declarations are silently dropped — borders vanish, self-message tint
