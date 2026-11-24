@@ -12,9 +12,9 @@
    Without these, transitioning a var() that resolves to a color has no effect.
    Browsers that don't support @property silently ignore these declarations.
    ───────────────────────────────────────────────────────────────────────────── */
-@property --c-accent      { syntax: "<color>"; inherits: true; initial-value: #2563eb; }
+@property --c-accent      { syntax: "<color>"; inherits: true; initial-value: #1d4ed8; }
 
-@property --c-unread      { syntax: "<color>"; inherits: true; initial-value: #dc2626; }
+@property --c-unread      { syntax: "<color>"; inherits: true; initial-value: #a31b1b; }
 
 @property --c-panel       { syntax: "<color>"; inherits: true; initial-value: #efece9; }
 
@@ -22,9 +22,9 @@
 
 @property --c-text        { syntax: "<color>"; inherits: true; initial-value: #1c1917; }
 
-@property --c-soft        { syntax: "<color>"; inherits: true; initial-value: #6b6460; }
+@property --c-soft        { syntax: "<color>"; inherits: true; initial-value: #544e4a; }
 
-@property --c-muted       { syntax: "<color>"; inherits: true; initial-value: #7b7570; }
+@property --c-muted       { syntax: "<color>"; inherits: true; initial-value: #67615c; }
 
 @property --c-border-mid  { syntax: "<color>"; inherits: true; initial-value: rgb(0 0 0 / 13%); }
 
@@ -42,30 +42,43 @@
   --c-border:     rgb(0 0 0 / 7%);
   --c-border-mid: rgb(0 0 0 / 13%);
 
-  /* Text */
-  --c-text:       #1c1917;
-  --c-soft:       #6b6460;
-  --c-muted:      #7b7570;
+  /* Boundary of a form control (inputs, selects, checkboxes, radios): at
+     least 3:1 on every surface (WCAG 1.4.11). --c-border and --c-border-mid
+     only separate areas, which carry no meaning of their own. */
+  --c-border-ui:  #827b76;
 
-  /* Accent */
-  --c-accent:      #2563eb;
-  --c-accent-glow: rgb(37 99 235 / 12%);
+  /* Text: every text token is at least 4.5:1 (WCAG AA) on every surface
+     above, checked by test/theme.test.mjs */
+  --c-text:       #1c1917;
+  --c-soft:       #544e4a;
+  --c-muted:      #67615c;
+
+  /* Accent. The -strong variants are the hover and pressed fills of accent
+     and danger buttons: further from --c-on-accent, so their text keeps
+     its contrast, where an opacity change would have lowered it */
+  --c-accent:        #1d4ed8;
+  --c-accent-strong: #1e40af;
+  --c-accent-glow:   rgb(29 78 216 / 12%);
+  --c-danger-strong: #991b1b;
 
   /* Status */
-  --c-online:  #16a34a;
-  --c-away:    #d97706;
-  --c-offline: #c4bfbb;
+  --c-online:  #15803d;
+  --c-away:    #b45309;
+  --c-offline: #827b76; /* a grey dot, still 3:1 on the sidebar */
 
   /* Markers */
-  --c-unread:        #dc2626;
+  --c-unread:        #a31b1b;
   --c-unread-muted:  #78716c;
   --c-hl-bg:         rgb(220 38 38 / 8%);
+  --c-hl-bg-hover:   rgb(220 38 38 / 12%);
   --c-hl-border:     #dc2626;
 
   /* Message types */
-  --c-notice:  #1d4ed8;
+  --c-notice:  #1e40af;
   --c-action:  #7c3aed;
-  --c-danger:  #dc2626;
+  --c-danger:  #b91c1c;
+  --c-warn:    #92400e; /* text in the away hue: --c-away is for dots */
+  --c-success: #166534; /* text in the online hue: --c-online is for dots */
   --c-code:    #a3431b;
 
   /* Typography */
@@ -99,7 +112,8 @@
   --fw-semibold: 600;
   --fw-bold:     700;
 
-  /* On-color text (white on accented surfaces) */
+  /* Text on accent, unread, unread-muted and danger fills: white here, dark
+     in dark mode, where those fills are light */
   --c-on-accent: #fff;
 
   /* Tell the browser this page supports both schemes so system UI
@@ -122,7 +136,7 @@
   --unread-marker-color:    var(--c-unread);
   --date-marker-color:      var(--c-muted);
   --button-color:           var(--c-accent);
-  --button-text-color-hover: #fff;
+  --button-text-color-hover: var(--c-on-accent);
   --overlay-bg-color:       rgb(0 0 0 / 40%);
 
   /* Background of the message input form. Core's TypingIndicator component
@@ -145,21 +159,28 @@
     --c-hover:      #312d2a;
     --c-border:     rgb(255 255 255 / 7%);
     --c-border-mid: rgb(255 255 255 / 12%);
+    --c-border-ui:  #847c77;
     --c-text:   #e7e5e4;
-    --c-soft:   #a8a29e;
-    --c-muted:  #79716c;
-    --c-accent:      #60a5fa;
-    --c-accent-glow: rgb(96 165 250 / 14%);
+    --c-soft:   #c2bcb7;
+    --c-muted:  #a09892;
+    --c-accent:        #60a5fa;
+    --c-accent-strong: #93c5fd;
+    --c-accent-glow:   rgb(96 165 250 / 14%);
+    --c-danger-strong: #fecaca;
     --c-online:  #4ade80;
     --c-away:    #fb923c;
-    --c-offline: #44403c;
-    --c-unread:        #f87171;
+    --c-offline: #847c77;
+    --c-unread:        #fb8a8a;
     --c-unread-muted:  #a8a29e;
     --c-hl-bg:         rgb(248 113 113 / 10%);
+    --c-hl-bg-hover:   rgb(248 113 113 / 14%);
     --c-hl-border:     #f87171;
     --c-notice:  #93c5fd;
     --c-action:  #c4b5fd;
     --c-danger:  #fca5a5;
+    --c-warn:    #fb923c;
+    --c-success: #4ade80;
+    --c-on-accent: #1c1917;
     --c-code:    #fdba74;
     --overlay-bg-color: rgb(0 0 0 / 60%);
 
@@ -224,10 +245,10 @@ code, kbd, pre, .irc-monospace {
    ───────────────────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar             { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track       { background: transparent; }
-::-webkit-scrollbar-thumb       { background: var(--c-border-mid); border-radius: 3px; }
+::-webkit-scrollbar-thumb       { background: var(--c-border-ui); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--c-muted); }
 ::-webkit-scrollbar-corner      { background: transparent; }
-*                               { scrollbar-width: thin; scrollbar-color: var(--c-border-mid) transparent; }
+*                               { scrollbar-width: thin; scrollbar-color: var(--c-border-ui) transparent; }
 
 @media (prefers-color-scheme: dark) {
   ::-webkit-scrollbar-thumb       { background: var(--c-muted); }
@@ -304,7 +325,7 @@ code, kbd, pre, .irc-monospace {
 .jump-to-input .input {
   background: var(--c-elevated);
   color: var(--c-text);
-  border: 1px solid var(--c-border);
+  border: 1px solid var(--c-border-ui);
   border-radius: var(--r-sm);
 }
 .jump-to-input .input::placeholder { color: var(--c-muted); opacity: 1; }
@@ -441,8 +462,11 @@ code, kbd, pre, .irc-monospace {
   border-left-color: var(--c-unread);
 }
 
+/* color restated: core's .badge.highlight sets #49505a at higher specificity
+   than .badge above, which left the count at 1.1:1 on the red fill */
 .channel-list-item .badge.highlight {
   background: var(--c-unread);
+  color: var(--c-on-accent);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--c-unread) 30%, transparent);
 }
 
@@ -454,7 +478,7 @@ code, kbd, pre, .irc-monospace {
 .channel-list-item.not-secure,
 .channel-list-item.not-secure:hover,
 .channel-list-item.not-secure.active {
-  color: var(--c-away);
+  color: var(--c-warn);
 }
 
 .channel-list-item.not-connected,
@@ -576,19 +600,19 @@ code, kbd, pre, .irc-monospace {
   font-weight: var(--fw-medium);
   cursor: pointer;
   box-shadow: var(--shadow-sm);
-  transition: opacity var(--t), box-shadow var(--t), transform var(--t);
+  transition: background var(--t), box-shadow var(--t), transform var(--t);
   white-space: nowrap;
 }
 
 .jump-to-bottom .jump-to-bottom-btn:hover,
 .jump-to-bottom button:hover {
-  opacity: 0.88;
+  background: var(--c-accent-strong);
   box-shadow: var(--shadow-md);
 }
 
 .jump-to-bottom .jump-to-bottom-btn:active,
 .jump-to-bottom button:active {
-  opacity: 0.72;
+  background: var(--c-accent-strong);
   transform: scale(0.96);
   box-shadow: var(--shadow-sm);
 }
@@ -687,9 +711,13 @@ code, kbd, pre, .irc-monospace {
   text-overflow: ellipsis;
   display: inline-block;
   max-width: 100%;
-  transition: opacity var(--t);
 }
-#chat .from .user:hover { opacity: 0.65; }
+
+/* Hover underlines the nick: fading it, as before, took it below 4.5:1 */
+#chat .from .user:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 
 /* ── "·" separator + time: header line, after nick ── */
 #chat .time {
@@ -736,8 +764,8 @@ code, kbd, pre, .irc-monospace {
   text-wrap: pretty;    /* avoid orphaned last words (Chrome 117+, progressive) */
 }
 
-/* Own messages */
-#chat .msg.self .from .user { opacity: 0.65; }
+/* Own messages: the accent border and tint set them apart; the nick keeps
+   its full colour (fading it took it below 4.5:1) */
 #chat .msg.self .content    { color: var(--c-soft); }
 
 #chat .msg.self {
@@ -756,7 +784,7 @@ code, kbd, pre, .irc-monospace {
   border-left: 2px solid var(--c-hl-border);
   padding-left: 14px; /* 2px border + 14px = 16px from edge */
 }
-#chat .chat-view .msg.highlight:hover    { background: var(--c-hl-bg); filter: brightness(0.97); }
+#chat .chat-view .msg.highlight:hover    { background: var(--c-hl-bg-hover); }
 #chat .chat-view .msg.highlight .content { color: var(--c-text); font-style: normal; border-left: none; }
 
 /* Self-highlight: own message that also mentions you — highlight wins over self styling */
@@ -840,7 +868,7 @@ code, kbd, pre, .irc-monospace {
    with the purple italic text around it. */
 #chat .msg[data-type="action"] .from        { color: var(--c-action); }
 #chat .msg[data-type="action"] .content     { color: var(--c-action); font-style: italic; }
-#chat .msg[data-type="action"] .user        { color: var(--c-action) !important; opacity: 0.8; }
+#chat .msg[data-type="action"] .user        { color: var(--c-action) !important; }
 
 #chat .msg[data-type="notice"] .content     { color: var(--c-notice); }
 #chat .msg[data-type="notice"] .from .user  { color: var(--c-notice) !important; }
@@ -883,6 +911,22 @@ code, kbd, pre, .irc-monospace {
 ) .content { color: var(--c-muted); font-size: 12.5px; }
 
 #chat .msg[data-type="error"] .content { color: var(--c-danger); }
+
+/* Core colours some text itself, below 4.5:1 on this theme's surfaces: the
+   time of a highlighted message (#696969), of a notice or wallops (#0074d9),
+   wallops text (#0074d9) and error lines (#e74c3c). */
+#chat .chat-view[data-type] .msg.highlight .time,
+#chat .msg[data-type="notice"] .time,
+#chat .msg[data-type="wallops"] .time { color: var(--c-muted); }
+
+#chat .msg[data-type="wallops"] .content,
+#chat .msg[data-type="wallops"] .user { color: var(--c-notice); }
+
+#chat .msg[data-type="error"],
+#chat .msg[data-type="error"] .from { color: var(--c-danger); }
+
+/* stylelint-disable-next-line selector-class-pattern -- core's class name */
+#chat .msg.channel_list_loading .text { color: var(--c-muted); }
 
 /* Status events you triggered yourself (changing the topic, setting a mode,
    kicking someone, …) come back from the server tagged .self same as a
@@ -947,17 +991,17 @@ code, kbd, pre, .irc-monospace {
    9. Nick colours — light mode
    ───────────────────────────────────────────────────────────────────────────── */
 .user.color-1  { color: #b91c1c; }
-.user.color-2  { color: #b45309; }
-.user.color-3  { color: #15803d; }
-.user.color-4  { color: #0e7490; }
+.user.color-2  { color: #a04a08; }
+.user.color-3  { color: #137337; }
+.user.color-4  { color: #0d6c86; }
 .user.color-5  { color: #1d4ed8; }
 .user.color-6  { color: #7e22ce; }
-.user.color-7  { color: #c2410c; }
-.user.color-8  { color: #0f766e; }
+.user.color-7  { color: #b13b0b; }
+.user.color-8  { color: #0e7068; }
 .user.color-9  { color: #0369a1; }
-.user.color-10 { color: #4d7c0f; }
-.user.color-11 { color: #a16207; }
-.user.color-12 { color: #0891b2; }
+.user.color-10 { color: #456e0d; }
+.user.color-11 { color: #8f5706; }
+.user.color-12 { color: #096d84; }
 .user.color-13 { color: #6d28d9; }
 .user.color-14 { color: #be185d; }
 .user.color-15 { color: #1e40af; }
@@ -992,15 +1036,15 @@ code, kbd, pre, .irc-monospace {
   .user.color-9  { color: #7dd3fc; }
   .user.color-10 { color: #bef264; }
   .user.color-11 { color: #fde68a; }
-  .user.color-12 { color: #34d399; }
-  .user.color-13 { color: #a855f7; }
+  .user.color-12 { color: #22d3ee; }
+  .user.color-13 { color: #bb86fa; }
   .user.color-14 { color: #f9a8d4; }
   .user.color-15 { color: #bfdbfe; }
   .user.color-16 { color: #a7f3d0; }
   .user.color-17 { color: #f87171; }
   .user.color-18 { color: #fbbf24; }
   .user.color-19 { color: #4ade80; }
-  .user.color-20 { color: #fb7185; }
+  .user.color-20 { color: #a5f3fc; }
   .user.color-21 { color: #60a5fa; }
   .user.color-22 { color: #c084fc; }
   .user.color-23 { color: #fb923c; }
@@ -1011,7 +1055,7 @@ code, kbd, pre, .irc-monospace {
   .user.color-28 { color: #06b6d4; }
   .user.color-29 { color: #a78bfa; }
   .user.color-30 { color: #f472b6; }
-  .user.color-31 { color: #818cf8; }
+  .user.color-31 { color: #858ff8; }
   .user.color-32 { color: #e879f9; }
 }
 
@@ -1180,15 +1224,15 @@ code, kbd, pre, .irc-monospace {
   padding: 3px 10px;
   font-size: 13px;
 
-  /* No color override — .color-X classes apply so nicks match their chat colour */
-  opacity: 0.85;
+  /* No color override: .color-X classes apply so nicks match their chat
+     colour, at full strength (they are 4.5:1 on the panel and its hover) */
   cursor: pointer;
   border-radius: var(--r-sm);
   margin: 0 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: background var(--t), opacity var(--t);
+  transition: background var(--t);
   background: none;
   border: none;
   width: calc(100% - 8px);
@@ -1199,7 +1243,6 @@ code, kbd, pre, .irc-monospace {
 
 #chat .userlist .user:hover {
   background: var(--c-hover);
-  opacity: 1;
 }
 
 .user-mode {
@@ -1256,7 +1299,7 @@ code, kbd, pre, .irc-monospace {
 #form #input {
   flex: 1 1 auto;
   background: var(--c-bg);
-  border: 1px solid var(--c-border-mid);
+  border: 1px solid var(--c-border-ui);
   border-radius: var(--r);
   color: var(--c-text);
   color-scheme: light dark;
@@ -1288,13 +1331,13 @@ code, kbd, pre, .irc-monospace {
   font-size: 13px;
   font-weight: var(--fw-medium);
   cursor: pointer;
-  transition: opacity var(--t), transform var(--t);
+  transition: background var(--t), transform var(--t);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
-#form #submit:hover  { opacity: 0.82; }
-#form #submit:active { opacity: 0.70; transform: scale(0.97); }
+#form #submit:hover  { background: var(--c-accent-strong); }
+#form #submit:active { background: var(--c-accent-strong); transform: scale(0.97); }
 
 #form #upload {
   flex-shrink: 0;
@@ -1334,7 +1377,7 @@ code, kbd, pre, .irc-monospace {
 form.message-search input {
   background: var(--c-elevated);
   color: var(--c-text);
-  border: 1px solid var(--c-border-mid);
+  border: 1px solid var(--c-border-ui);
   border-radius: var(--r-sm);
 }
 
@@ -1635,7 +1678,9 @@ label { color: var(--c-soft); font-size: 13.5px; }
    has higher specificity than a bare `select`/`textarea` type selector and
    was winning the background/color cascade — confirmed live: the Settings
    "Theme" <select> rendered a plain white box in dark mode. Matching `.input`
-   directly ties its specificity and our later stylesheet wins the tie. */
+   directly ties its specificity and our later stylesheet wins the tie.
+   background-color, not the shorthand: on a <select class="input"> the
+   shorthand at .input's specificity would reset the chevron set below. */
 input[type="text"],
 input[type="password"],
 input[type="url"],
@@ -1644,8 +1689,8 @@ input[type="number"],
 select,
 textarea,
 .input {
-  background: var(--c-bg);
-  border: 1px solid var(--c-border-mid);
+  background-color: var(--c-bg);
+  border: 1px solid var(--c-border-ui);
   border-radius: var(--r);
   color: var(--c-text);
   color-scheme: light dark;
@@ -1677,7 +1722,7 @@ button:disabled {
    focus (not just keyboard), and a disabled one shows a light-gray fill
    that doesn't adapt to dark mode. */
 .input:disabled {
-  background: var(--c-elevated);
+  background-color: var(--c-elevated);
 }
 
 .input:not(:disabled):hover,
@@ -1686,11 +1731,14 @@ button:disabled {
 }
 
 /* Custom select arrow — strips the OS chrome and injects a themed chevron.
-   The SVG is URL-encoded inline so there's no external dependency. */
-select {
+   The SVG is URL-encoded inline so there's no external dependency.
+   select.input matches core's own selects (Settings → Theme), which carry
+   .input: a bare `select` loses padding-right to the .input rule above. */
+select,
+select.input {
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%236b6460' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23544e4a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
   padding-right: 30px;
@@ -1698,9 +1746,20 @@ select {
 }
 
 @media (prefers-color-scheme: dark) {
-  select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23a8a29e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  select,
+  select.input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23c2bcb7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   }
+}
+
+/* Core gives .input a fixed 35px height with a 35px line-height. A text input
+   centres its line regardless, but a select set its 35px line inside the 19px
+   left by the padding above and cut the text off at the bottom. Without
+   vertical padding and with a 32px line, Chromium centres the text exactly as
+   in the text inputs (measured in light, dark, touch and increased contrast). */
+select.input {
+  padding-block: 0;
+  line-height: 32px;
 }
 
 /* Unified focus ring — keyboard/screen-reader only (:focus-visible) */
@@ -1733,12 +1792,14 @@ button.btn:focus-visible,
   outline-offset: 2px;
 }
 
-/* On-accent focus ring — a plain outline would vanish against the accent background */
+/* Focus ring on accent-filled buttons: the offset puts the ring on the page
+   background, not on the button, so it takes the accent colour (an
+   --c-on-accent ring there was white on the light page, dark on the dark one) */
 #form #submit:focus-visible,
 .btn-primary:focus-visible,
 .jump-to-bottom .jump-to-bottom-btn:focus-visible,
 .jump-to-bottom button:focus-visible {
-  outline: 2px solid var(--c-on-accent);
+  outline: 2px solid var(--c-accent);
   outline-offset: 2px;
 }
 
@@ -1752,7 +1813,7 @@ input[type="radio"] {
   -webkit-appearance: none;
   width: 16px;
   height: 16px;
-  border: 1.5px solid var(--c-border-mid);
+  border: 1.5px solid var(--c-border-ui);
   background: var(--c-bg);
   cursor: pointer;
   flex-shrink: 0;
@@ -1784,6 +1845,18 @@ input[type="radio"]:checked {
   background-position: center;
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
+}
+
+/* Dark mode: the accent fill is light, so the mark is drawn in --c-on-accent's
+   dark value instead of white */
+@media (prefers-color-scheme: dark) {
+  input[type="checkbox"]:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%231c1917' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3 8 6.5 11.5 13 4.5'/%3E%3C/svg%3E");
+  }
+
+  input[type="radio"]:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='3.5' fill='%231c1917'/%3E%3C/svg%3E");
+  }
 }
 
 input[type="checkbox"]:focus-visible,
@@ -1894,26 +1967,60 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
 .btn:hover          { background: var(--c-hover); }
 .btn:active         { background: var(--c-elevated); transform: scale(0.97); }
 .btn-primary        { background: var(--c-accent); border-color: transparent; color: var(--c-on-accent); font-weight: var(--fw-medium); }
-.btn-primary:hover  { opacity: 0.85; }
-.btn-primary:active { opacity: 0.72; transform: scale(0.97); }
+.btn-primary:hover  { background: var(--c-accent-strong); }
+.btn-primary:active { background: var(--c-accent-strong); transform: scale(0.97); }
 
 /* Destructive confirm (e.g. "Leave channel", "Clear history") */
 .btn-danger        { background: var(--c-danger); border-color: transparent; color: var(--c-on-accent); font-weight: var(--fw-medium); }
-.btn-danger:hover  { opacity: 0.85; }
-.btn-danger:active { opacity: 0.72; transform: scale(0.97); }
+.btn-danger:hover  { background: var(--c-danger-strong); }
+.btn-danger:active { background: var(--c-danger-strong); transform: scale(0.97); }
+
+/* Form messages core colours #e74c3c (error) and #2ecc40 (success): 4.0:1
+   and 2.1:1 on the light background. */
+#sign-in .error,
+#settings .error,
+#settings #change-password .error { color: var(--c-danger); }
+#settings #change-password .success { color: var(--c-success); }
+
+/* Keyboard shortcuts (Help): core draws a white key with grey edges, which
+   stays white in dark mode */
+kbd {
+  background: var(--c-elevated);
+  background-image: none;
+  border: 1px solid var(--c-border-mid);
+  box-shadow: 0 1px 0 var(--c-border-mid);
+  color: var(--c-text);
+}
 
 /* Version checker (Settings → Appearance). Core hardcodes its error/up-to-date
    states to light pastel backgrounds with dark text (#f2dede/#a94442,
    #dff0d8/#3c763d) — a light patch that would look out of place in dark mode. */
 #version-checker.error {
   background: color-mix(in srgb, var(--c-danger) 15%, var(--c-elevated));
-  color: var(--c-danger);
+  border-left: 3px solid var(--c-danger);
+  color: var(--c-text); /* red or green text on its own tint falls below 4.5:1 */
 }
 
 #version-checker.up-to-date {
   background: color-mix(in srgb, var(--c-online) 15%, var(--c-elevated));
-  color: var(--c-online);
+  border-left: 3px solid var(--c-online);
+  color: var(--c-text);
 }
+
+/* The other two states, "checking" and "update available", get core's pale
+   blue and yellow patches (#d9edf7, #fcf8e3) in both modes: give them the
+   elevated surface with a coloured edge instead */
+#version-checker.loading,
+#version-checker.new-version,
+#version-checker.new-packages {
+  background: var(--c-elevated);
+  color: var(--c-text);
+}
+
+#version-checker.loading { border-left: 3px solid var(--c-notice); }
+
+#version-checker.new-version,
+#version-checker.new-packages { border-left: 3px solid var(--c-warn); }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    19. Sign-in / connect / loading
@@ -1995,7 +2102,8 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
   input[type="email"],
   input[type="number"],
   select,
-  textarea {
+  textarea,
+  .input {
     font-size: 16px;
   }
 
@@ -2034,6 +2142,10 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
     padding-top: 6px;
     padding-bottom: 6px;
   }
+
+  /* Grouped-message times only appear on hover, which a touch screen never
+     sends: keep them visible (in --c-muted, which already reads as secondary) */
+  #chat .msg.previous-source .time { opacity: 1; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -2049,12 +2161,13 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
 .status-icon > .status-away::after    { background-color: var(--c-away); }
 .status-icon > .status-offline::after { background-color: var(--c-offline); }
 
-/* Progressive: dim a userlist entry once we know they're away, without
-   needing JS to toggle a class on the row itself. Silently ignored in
-   browsers without :has() support — the status dot alone still communicates it. */
+/* Progressive: mute a userlist entry once we know they're away, without
+   needing JS to toggle a class on the row itself. --c-muted rather than an
+   opacity, which took the nick below 4.5:1. Silently ignored in browsers
+   without :has() support; the status dot alone still communicates it. */
 @supports selector(:has(a, b)) {
   #chat .userlist .user:has(.status-away) {
-    opacity: 0.55;
+    color: var(--c-muted);
   }
 }
 
@@ -2122,9 +2235,9 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
 
   /* Grouped-message timestamps rely on an opacity transition to reveal on hover.
      With motion disabled that transition is suppressed, so make them always
-     softly visible instead of requiring a hover to trigger the instant snap. */
+     visible (in --c-muted) instead of requiring a hover to trigger the snap. */
   #chat .msg.previous-source .time {
-    opacity: 0.4;
+    opacity: 1;
     transition: none;
   }
 }
@@ -2140,7 +2253,6 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
   #form,
   .unread-marker,
   .jump-to-bottom,
-  .notification,
   #chat .header button,
   #chat .toggle-button { display: none !important; }
 
@@ -2256,9 +2368,6 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
   /* Range thumb: must stay visually distinct from the track */
   input[type="range"] { forced-color-adjust: none; }
 
-  /* Notification toast: left border carries semantic meaning (unread alert) */
-  .notification { border-left-color: Highlight; }
-
   /* Custom checkbox/radio: appearance:none stripped the OS control — under
      forced-colors the background-image SVG is overridden, making the
      checkmark/disc invisible. Opt out so our drawn controls stay legible. */
@@ -2281,25 +2390,48 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
 
 /* ─────────────────────────────────────────────────────────────────────────────
    27. IRC color legibility
-   mIRC color classes (.irc-fg-N / .irc-bg-N) carry hardcoded hues from a
-   1990s palette — some are invisible on this theme's backgrounds. The fixes
-   below remap only the problem cases; all others are left as-is.
+   Core paints the 16 classic mIRC colours (.irc-fg0 to .irc-fg15) with fixed
+   values, several near-invisible on these backgrounds (yellow 1.3:1 and
+   white 1.1:1 in light mode, navy 1.1:1 in dark mode). Each is moved toward
+   black (light mode) or white (dark mode), keeping its hue, until it reaches
+   4.5:1 on every message surface; white, silver and grey keep their order.
+   Text with an explicit mIRC background is left as sent: the sender chose
+   that pair. The extended colours 16 to 98 are left as core draws them.
    ───────────────────────────────────────────────────────────────────────────── */
-
-/* Light mode: white foreground (color 0) is invisible on the warm off-white bg */
-#chat .content .irc-fg-0 { color: var(--c-soft); }
+#chat .content .irc-fg0:not([class*="irc-bg"])   { color: #636363; } /* white */
+#chat .content .irc-fg1:not([class*="irc-bg"])   { color: #000; } /* black */
+#chat .content .irc-fg2:not([class*="irc-bg"])   { color: #001f3f; } /* navy */
+#chat .content .irc-fg3:not([class*="irc-bg"])   { color: #1a7224; } /* green */
+#chat .content .irc-fg4:not([class*="irc-bg"])   { color: #ba2f27; } /* red */
+#chat .content .irc-fg5:not([class*="irc-bg"])   { color: #85144b; } /* maroon */
+#chat .content .irc-fg6:not([class*="irc-bg"])   { color: #aa0cc1; } /* purple */
+#chat .content .irc-fg7:not([class*="irc-bg"])   { color: #995010; } /* orange */
+#chat .content .irc-fg8:not([class*="irc-bg"])   { color: #736300; } /* yellow */
+#chat .content .irc-fg9:not([class*="irc-bg"])   { color: #007332; } /* lime */
+#chat .content .irc-fg10:not([class*="irc-bg"])  { color: #1f6e6e; } /* teal */
+#chat .content .irc-fg11:not([class*="irc-bg"])  { color: #3d697a; } /* cyan */
+#chat .content .irc-fg12:not([class*="irc-bg"])  { color: #0064bb; } /* blue */
+#chat .content .irc-fg13:not([class*="irc-bg"])  { color: #b90e92; } /* pink */
+#chat .content .irc-fg14:not([class*="irc-bg"])  { color: #474747; } /* grey */
+#chat .content .irc-fg15:not([class*="irc-bg"])  { color: #575757; } /* silver */
 
 @media (prefers-color-scheme: dark) {
-  /* Dark mode: black (1), navy (2), dark green (3), maroon (5), and dark purple (6)
-     all disappear on the warm dark background — remap to legible equivalents */
-  #chat .content .irc-fg-1 { color: var(--c-text);  } /* black       → primary text  */
-  #chat .content .irc-fg-2 { color: #818cf8;         } /* navy        → indigo-400    */
-  #chat .content .irc-fg-3 { color: #4ade80;         } /* dark green  → green-400     */
-  #chat .content .irc-fg-5 { color: #f87171;         } /* maroon      → red-400       */
-  #chat .content .irc-fg-6 { color: #c084fc;         } /* purple      → purple-400    */
-
-  /* Dark backgrounds that would make text invisible */
-  #chat .content .irc-bg-1 { background-color: var(--c-elevated); } /* black bg */
+  #chat .content .irc-fg0:not([class*="irc-bg"])   { color: #fff; } /* white */
+  #chat .content .irc-fg1:not([class*="irc-bg"])   { color: #969696; } /* black */
+  #chat .content .irc-fg2:not([class*="irc-bg"])   { color: #8a98a7; } /* navy */
+  #chat .content .irc-fg3:not([class*="irc-bg"])   { color: #2ecc40; } /* green */
+  #chat .content .irc-fg4:not([class*="irc-bg"])   { color: #ff6158; } /* red */
+  #chat .content .irc-fg5:not([class*="irc-bg"])   { color: #c085a1; } /* maroon */
+  #chat .content .irc-fg6:not([class*="irc-bg"])   { color: #d170df; } /* purple */
+  #chat .content .irc-fg7:not([class*="irc-bg"])   { color: #ff851b; } /* orange */
+  #chat .content .irc-fg8:not([class*="irc-bg"])   { color: #ffdc00; } /* yellow */
+  #chat .content .irc-fg9:not([class*="irc-bg"])   { color: #01ff70; } /* lime */
+  #chat .content .irc-fg10:not([class*="irc-bg"])  { color: #39cccc; } /* teal */
+  #chat .content .irc-fg11:not([class*="irc-bg"])  { color: #7fdbff; } /* cyan */
+  #chat .content .irc-fg12:not([class*="irc-bg"])  { color: #4a9ce4; } /* blue */
+  #chat .content .irc-fg13:not([class*="irc-bg"])  { color: #f457d1; } /* pink */
+  #chat .content .irc-fg14:not([class*="irc-bg"])  { color: #aaa; } /* grey */
+  #chat .content .irc-fg15:not([class*="irc-bg"])  { color: #ddd; } /* silver */
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -2312,16 +2444,18 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
   :root {
     --c-border:     rgb(0 0 0 / 22%);
     --c-border-mid: rgb(0 0 0 / 35%);
-    --c-soft:       #3d3935; /* lifted from #6b6460 toward --c-text */
-    --c-muted:      #4a4542; /* lifted from #7b7570 */
+    --c-border-ui:  #67615c; /* lifted from #827b76 */
+    --c-soft:       #3d3935; /* lifted from #544e4a toward --c-text */
+    --c-muted:      #4a4542; /* lifted from #67615c */
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
       --c-border:     rgb(255 255 255 / 22%);
       --c-border-mid: rgb(255 255 255 / 35%);
-      --c-soft:       #d6d3d1; /* lifted from #a8a29e toward --c-text */
-      --c-muted:      #b5b0ac; /* lifted from #79716c */
+      --c-border-ui:  #a09892; /* lifted from #847c77 */
+      --c-soft:       #d6d3d1; /* lifted from #c2bcb7 toward --c-text */
+      --c-muted:      #b5b0ac; /* lifted from #a09892 */
     }
   }
 
@@ -2354,38 +2488,7 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   29. In-app notifications
-   TheLounge surfaces mention alerts via .notification elements when the window
-   is not focused. Style them as a small accent-tinted toast so they read
-   clearly without fighting the message content behind them.
-   ───────────────────────────────────────────────────────────────────────────── */
-.notification {
-  background: var(--c-elevated);
-  border: 1px solid var(--c-border-mid);
-  border-left: 3px solid var(--c-unread);
-  border-radius: var(--r);
-  box-shadow: var(--shadow-md);
-  color: var(--c-text);
-  font-size: 13px;
-  padding: 10px 14px;
-  max-width: 320px;
-}
-
-.notification .title {
-  font-weight: var(--fw-semibold);
-  color: var(--c-unread);
-  margin-bottom: 2px;
-  text-wrap: balance;
-}
-
-.notification .body {
-  color: var(--c-soft);
-  font-size: 12.5px;
-  line-height: var(--lh-tight);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   30. color-mix() fallbacks for older browsers
+   29. color-mix() fallbacks for older browsers
    Chrome <111, Firefox <113, Safari <16.2 don't support color-mix(). The theme
    uses it in ~15 places for alpha-composited tints. Without a fallback those
    declarations are silently dropped — borders vanish, self-message tint
@@ -2464,7 +2567,7 @@ progress::-moz-progress-bar      { background: var(--c-accent); border-radius: 9
   .channel-list-item .badge.highlight { box-shadow: 0 0 0 2px rgb(220 38 38 / 30%); }
 
   /* File-drop overlay tint */
-  #windows.drop-target::before { background: rgb(37 99 235 / 10%); }
+  #windows.drop-target::before { background: rgb(29 78 216 / 10%); }
 
   /* Preview card hover accent border */
   #chat .preview:hover .toggle-content { border-left-color: var(--c-accent); }
