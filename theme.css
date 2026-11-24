@@ -2117,6 +2117,10 @@ kbd {
     padding-top: 6px;
     padding-bottom: 6px;
   }
+
+  /* Grouped-message times only appear on hover, which a touch screen never
+     sends: keep them visible (in --c-muted, which already reads as secondary) */
+  #chat .msg.previous-source .time { opacity: 1; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
