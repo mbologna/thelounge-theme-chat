@@ -1635,7 +1635,9 @@ label { color: var(--c-soft); font-size: 13.5px; }
    has higher specificity than a bare `select`/`textarea` type selector and
    was winning the background/color cascade — confirmed live: the Settings
    "Theme" <select> rendered a plain white box in dark mode. Matching `.input`
-   directly ties its specificity and our later stylesheet wins the tie. */
+   directly ties its specificity and our later stylesheet wins the tie.
+   background-color, not the shorthand: on a <select class="input"> the
+   shorthand at .input's specificity would reset the chevron set below. */
 input[type="text"],
 input[type="password"],
 input[type="url"],
@@ -1644,7 +1646,7 @@ input[type="number"],
 select,
 textarea,
 .input {
-  background: var(--c-bg);
+  background-color: var(--c-bg);
   border: 1px solid var(--c-border-mid);
   border-radius: var(--r);
   color: var(--c-text);
@@ -1677,7 +1679,7 @@ button:disabled {
    focus (not just keyboard), and a disabled one shows a light-gray fill
    that doesn't adapt to dark mode. */
 .input:disabled {
-  background: var(--c-elevated);
+  background-color: var(--c-elevated);
 }
 
 .input:not(:disabled):hover,
@@ -1686,8 +1688,11 @@ button:disabled {
 }
 
 /* Custom select arrow — strips the OS chrome and injects a themed chevron.
-   The SVG is URL-encoded inline so there's no external dependency. */
-select {
+   The SVG is URL-encoded inline so there's no external dependency.
+   select.input matches core's own selects (Settings → Theme), which carry
+   .input: a bare `select` loses padding-right to the .input rule above. */
+select,
+select.input {
   appearance: none;
   -webkit-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%236b6460' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
@@ -1698,7 +1703,8 @@ select {
 }
 
 @media (prefers-color-scheme: dark) {
-  select {
+  select,
+  select.input {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23a8a29e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   }
 }
