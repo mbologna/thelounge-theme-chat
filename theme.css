@@ -1709,6 +1709,16 @@ select.input {
   }
 }
 
+/* Core gives .input a fixed 35px height with a 35px line-height. A text input
+   centres its line regardless, but a select set its 35px line inside the 19px
+   left by the padding above and cut the text off at the bottom. Without
+   vertical padding and with a 32px line, Chromium centres the text exactly as
+   in the text inputs (measured in light, dark, touch and increased contrast). */
+select.input {
+  padding-block: 0;
+  line-height: 32px;
+}
+
 /* Unified focus ring — keyboard/screen-reader only (:focus-visible) */
 #form #input:focus-visible,
 input[type="text"]:focus-visible,
