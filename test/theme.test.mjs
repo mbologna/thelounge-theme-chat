@@ -285,3 +285,12 @@ for (const [scheme, t, nicks] of [
     assert.deepEqual(failing, [], `nick colours below 4.5:1:\n${failing.join("\n")}`);
   });
 }
+
+test("no partial opacity on text: fading lowers contrast below the tested ratios", () => {
+  const offending = [...code.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+    // Pseudo-elements are graphics here (the avatar disc), not text
+    .filter(([, selector]) => /\.(user|time|content|name|text)\b/.test(selector) && !/::(before|after)/.test(selector))
+    .filter(([, , body]) => [...body.matchAll(/(?:^|;|\s)opacity:\s*([\d.]+)/g)].some((m) => +m[1] > 0 && +m[1] < 1))
+    .map(([, selector]) => selector.trim().replace(/\s+/g, " "));
+  assert.deepEqual(offending, [], `text faded with opacity:\n${offending.join("\n")}`);
+});

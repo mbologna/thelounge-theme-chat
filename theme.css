@@ -705,9 +705,13 @@ code, kbd, pre, .irc-monospace {
   text-overflow: ellipsis;
   display: inline-block;
   max-width: 100%;
-  transition: opacity var(--t);
 }
-#chat .from .user:hover { opacity: 0.65; }
+
+/* Hover underlines the nick: fading it, as before, took it below 4.5:1 */
+#chat .from .user:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 
 /* ── "·" separator + time: header line, after nick ── */
 #chat .time {
@@ -754,8 +758,8 @@ code, kbd, pre, .irc-monospace {
   text-wrap: pretty;    /* avoid orphaned last words (Chrome 117+, progressive) */
 }
 
-/* Own messages */
-#chat .msg.self .from .user { opacity: 0.65; }
+/* Own messages: the accent border and tint set them apart; the nick keeps
+   its full colour (fading it took it below 4.5:1) */
 #chat .msg.self .content    { color: var(--c-soft); }
 
 #chat .msg.self {
@@ -858,7 +862,7 @@ code, kbd, pre, .irc-monospace {
    with the purple italic text around it. */
 #chat .msg[data-type="action"] .from        { color: var(--c-action); }
 #chat .msg[data-type="action"] .content     { color: var(--c-action); font-style: italic; }
-#chat .msg[data-type="action"] .user        { color: var(--c-action) !important; opacity: 0.8; }
+#chat .msg[data-type="action"] .user        { color: var(--c-action) !important; }
 
 #chat .msg[data-type="notice"] .content     { color: var(--c-notice); }
 #chat .msg[data-type="notice"] .from .user  { color: var(--c-notice) !important; }
@@ -1214,15 +1218,15 @@ code, kbd, pre, .irc-monospace {
   padding: 3px 10px;
   font-size: 13px;
 
-  /* No color override — .color-X classes apply so nicks match their chat colour */
-  opacity: 0.85;
+  /* No color override: .color-X classes apply so nicks match their chat
+     colour, at full strength (they are 4.5:1 on the panel and its hover) */
   cursor: pointer;
   border-radius: var(--r-sm);
   margin: 0 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: background var(--t), opacity var(--t);
+  transition: background var(--t);
   background: none;
   border: none;
   width: calc(100% - 8px);
@@ -1233,7 +1237,6 @@ code, kbd, pre, .irc-monospace {
 
 #chat .userlist .user:hover {
   background: var(--c-hover);
-  opacity: 1;
 }
 
 .user-mode {
@@ -2137,12 +2140,13 @@ kbd {
 .status-icon > .status-away::after    { background-color: var(--c-away); }
 .status-icon > .status-offline::after { background-color: var(--c-offline); }
 
-/* Progressive: dim a userlist entry once we know they're away, without
-   needing JS to toggle a class on the row itself. Silently ignored in
-   browsers without :has() support — the status dot alone still communicates it. */
+/* Progressive: mute a userlist entry once we know they're away, without
+   needing JS to toggle a class on the row itself. --c-muted rather than an
+   opacity, which took the nick below 4.5:1. Silently ignored in browsers
+   without :has() support; the status dot alone still communicates it. */
 @supports selector(:has(a, b)) {
   #chat .userlist .user:has(.status-away) {
-    opacity: 0.55;
+    color: var(--c-muted);
   }
 }
 
@@ -2210,9 +2214,9 @@ kbd {
 
   /* Grouped-message timestamps rely on an opacity transition to reveal on hover.
      With motion disabled that transition is suppressed, so make them always
-     softly visible instead of requiring a hover to trigger the instant snap. */
+     visible (in --c-muted) instead of requiring a hover to trigger the snap. */
   #chat .msg.previous-source .time {
-    opacity: 0.4;
+    opacity: 1;
     transition: none;
   }
 }
