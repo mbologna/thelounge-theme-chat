@@ -294,3 +294,42 @@ test("no partial opacity on text: fading lowers contrast below the tested ratios
     .map(([, selector]) => selector.trim().replace(/\s+/g, " "));
   assert.deepEqual(offending, [], `text faded with opacity:\n${offending.join("\n")}`);
 });
+
+const moreBody = blockAt(code, code.search(/@media\s*\(prefers-contrast:\s*more\)\s*\{/));
+const moreLight = { ...lightTokens, ...tokens(blockAt(moreBody, moreBody.search(/:root\s*\{/))) };
+const moreDarkStart = moreBody.search(/@media\s*\(prefers-color-scheme:\s*dark\)/);
+const moreDark = { ...darkTokens, ...tokens(blockAt(moreBody, moreBody.indexOf(":root", moreDarkStart))) };
+
+for (const [scheme, base, more] of [
+  ["light", lightTokens, moreLight],
+  ["dark", darkTokens, moreDark],
+]) {
+  test(`${scheme} mode: form control borders are 3:1 on every surface (WCAG 1.4.11)`, () => {
+    const failing = [];
+    for (const [label, t] of [["default", base], ["prefers-contrast: more", more]]) {
+      const border = parseColor(t["c-border-ui"]);
+      for (const name of ["bg", "panel", "elevated", "hover"]) {
+        const ratio = contrast(border, parseColor(t[`c-${name}`]));
+        if (ratio < 3) failing.push(`${label}: border-ui on ${name}: ${ratio.toFixed(2)}`);
+      }
+      for (const dot of ["online", "away", "offline"]) {
+        const ratio = contrast(parseColor(t[`c-${dot}`]), parseColor(t["c-panel"]));
+        if (ratio < 3) failing.push(`${label}: ${dot} dot on panel: ${ratio.toFixed(2)}`);
+      }
+    }
+    assert.deepEqual(failing, [], failing.join("\n"));
+  });
+
+  test(`${scheme} mode: prefers-contrast: more is never weaker than the default`, () => {
+    const weaker = [];
+    for (const name of ["soft", "muted", "border-ui"]) {
+      for (const surface of ["bg", "elevated"]) {
+        const bg = parseColor(base[`c-${surface}`]);
+        const before = contrast(parseColor(base[`c-${name}`]), bg);
+        const after = contrast(parseColor(more[`c-${name}`]), bg);
+        if (after < before) weaker.push(`${name} on ${surface}: ${after.toFixed(2)} < ${before.toFixed(2)}`);
+      }
+    }
+    assert.deepEqual(weaker, [], weaker.join("\n"));
+  });
+}

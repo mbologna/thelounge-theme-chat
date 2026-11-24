@@ -42,6 +42,11 @@
   --c-border:     rgb(0 0 0 / 7%);
   --c-border-mid: rgb(0 0 0 / 13%);
 
+  /* Boundary of a form control (inputs, selects, checkboxes, radios): at
+     least 3:1 on every surface (WCAG 1.4.11). --c-border and --c-border-mid
+     only separate areas, which carry no meaning of their own. */
+  --c-border-ui:  #827b76;
+
   /* Text: every text token is at least 4.5:1 (WCAG AA) on every surface
      above, checked by test/theme.test.mjs */
   --c-text:       #1c1917;
@@ -59,7 +64,7 @@
   /* Status */
   --c-online:  #15803d;
   --c-away:    #b45309;
-  --c-offline: #c4bfbb;
+  --c-offline: #827b76; /* a grey dot, still 3:1 on the sidebar */
 
   /* Markers */
   --c-unread:        #a31b1b;
@@ -154,6 +159,7 @@
     --c-hover:      #312d2a;
     --c-border:     rgb(255 255 255 / 7%);
     --c-border-mid: rgb(255 255 255 / 12%);
+    --c-border-ui:  #847c77;
     --c-text:   #e7e5e4;
     --c-soft:   #c2bcb7;
     --c-muted:  #a09892;
@@ -163,7 +169,7 @@
     --c-danger-strong: #fecaca;
     --c-online:  #4ade80;
     --c-away:    #fb923c;
-    --c-offline: #44403c;
+    --c-offline: #847c77;
     --c-unread:        #fb8a8a;
     --c-unread-muted:  #a8a29e;
     --c-hl-bg:         rgb(248 113 113 / 10%);
@@ -239,10 +245,10 @@ code, kbd, pre, .irc-monospace {
    ───────────────────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar             { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track       { background: transparent; }
-::-webkit-scrollbar-thumb       { background: var(--c-border-mid); border-radius: 3px; }
+::-webkit-scrollbar-thumb       { background: var(--c-border-ui); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--c-muted); }
 ::-webkit-scrollbar-corner      { background: transparent; }
-*                               { scrollbar-width: thin; scrollbar-color: var(--c-border-mid) transparent; }
+*                               { scrollbar-width: thin; scrollbar-color: var(--c-border-ui) transparent; }
 
 @media (prefers-color-scheme: dark) {
   ::-webkit-scrollbar-thumb       { background: var(--c-muted); }
@@ -319,7 +325,7 @@ code, kbd, pre, .irc-monospace {
 .jump-to-input .input {
   background: var(--c-elevated);
   color: var(--c-text);
-  border: 1px solid var(--c-border);
+  border: 1px solid var(--c-border-ui);
   border-radius: var(--r-sm);
 }
 .jump-to-input .input::placeholder { color: var(--c-muted); opacity: 1; }
@@ -1293,7 +1299,7 @@ code, kbd, pre, .irc-monospace {
 #form #input {
   flex: 1 1 auto;
   background: var(--c-bg);
-  border: 1px solid var(--c-border-mid);
+  border: 1px solid var(--c-border-ui);
   border-radius: var(--r);
   color: var(--c-text);
   color-scheme: light dark;
@@ -1371,7 +1377,7 @@ code, kbd, pre, .irc-monospace {
 form.message-search input {
   background: var(--c-elevated);
   color: var(--c-text);
-  border: 1px solid var(--c-border-mid);
+  border: 1px solid var(--c-border-ui);
   border-radius: var(--r-sm);
 }
 
@@ -1684,7 +1690,7 @@ select,
 textarea,
 .input {
   background-color: var(--c-bg);
-  border: 1px solid var(--c-border-mid);
+  border: 1px solid var(--c-border-ui);
   border-radius: var(--r);
   color: var(--c-text);
   color-scheme: light dark;
@@ -1807,7 +1813,7 @@ input[type="radio"] {
   -webkit-appearance: none;
   width: 16px;
   height: 16px;
-  border: 1.5px solid var(--c-border-mid);
+  border: 1.5px solid var(--c-border-ui);
   background: var(--c-bg);
   cursor: pointer;
   flex-shrink: 0;
@@ -2404,6 +2410,7 @@ kbd {
   :root {
     --c-border:     rgb(0 0 0 / 22%);
     --c-border-mid: rgb(0 0 0 / 35%);
+    --c-border-ui:  #67615c; /* lifted from #827b76 */
     --c-soft:       #3d3935; /* lifted from #544e4a toward --c-text */
     --c-muted:      #4a4542; /* lifted from #67615c */
   }
@@ -2412,6 +2419,7 @@ kbd {
     :root {
       --c-border:     rgb(255 255 255 / 22%);
       --c-border-mid: rgb(255 255 255 / 35%);
+      --c-border-ui:  #a09892; /* lifted from #847c77 */
       --c-soft:       #d6d3d1; /* lifted from #c2bcb7 toward --c-text */
       --c-muted:      #b5b0ac; /* lifted from #a09892 */
     }
