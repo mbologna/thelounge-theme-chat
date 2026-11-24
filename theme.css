@@ -2007,6 +2007,21 @@ kbd {
   color: var(--c-text);
 }
 
+/* The other two states, "checking" and "update available", get core's pale
+   blue and yellow patches (#d9edf7, #fcf8e3) in both modes: give them the
+   elevated surface with a coloured edge instead */
+#version-checker.loading,
+#version-checker.new-version,
+#version-checker.new-packages {
+  background: var(--c-elevated);
+  color: var(--c-text);
+}
+
+#version-checker.loading { border-left: 3px solid var(--c-notice); }
+
+#version-checker.new-version,
+#version-checker.new-packages { border-left: 3px solid var(--c-warn); }
+
 /* ─────────────────────────────────────────────────────────────────────────────
    19. Sign-in / connect / loading
    ───────────────────────────────────────────────────────────────────────────── */
