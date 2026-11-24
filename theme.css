@@ -2078,7 +2078,8 @@ kbd {
   input[type="email"],
   input[type="number"],
   select,
-  textarea {
+  textarea,
+  .input {
     font-size: 16px;
   }
 
